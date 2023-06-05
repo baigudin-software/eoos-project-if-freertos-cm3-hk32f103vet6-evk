@@ -1,0 +1,3 @@
+--create .\libeoos.lib
+.\cpu.boot.keil.o
+.\cpu.interrupt.keil.o
