@@ -1,0 +1,11 @@
+/**
+ * @file      sys.Freertos.hpp
+ * @author    Sergey Baigudin, sergey@baigudin.software
+ * @copyright 2023, Sergey Baigudin, Baigudin Software
+ * 
+ * @brief Freertos system includes and definitions.
+ */
+#ifndef SYS_FREERTOS_HPP_
+#define SYS_FREERTOS_HPP_
+
+#endif // SYS_FREERTOS_HPP_

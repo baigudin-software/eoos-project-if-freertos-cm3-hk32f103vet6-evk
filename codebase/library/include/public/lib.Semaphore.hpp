@@ -46,10 +46,9 @@ public:
      */
     virtual ~Semaphore()
     {
-        api::System& system = sys::Call::get();
-        if( system.hasSemaphoreManager() )
+        if( semaphore_ != NULLPTR )
         {
-            system.getSemaphoreManager().remove(semaphore_);
+            delete semaphore_;
         }
     }
 

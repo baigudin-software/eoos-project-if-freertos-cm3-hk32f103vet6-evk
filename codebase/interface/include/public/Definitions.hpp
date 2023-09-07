@@ -55,7 +55,10 @@
  */
 #elif __GNUC__
 
-    #ifdef __LP64__
+    // @todo Avoid such style of definition here with definition EOOS_SIZE_TYPE
+    #ifdef EOOS_TYPE_STDLIB
+        #define EOOS_SIZE_TYPE std::size_t	
+    #elif __LP64__
         #define EOOS_TYPE_WIDTH_LP64
         #define EOOS_SIZE_TYPE unsigned long int
     #else

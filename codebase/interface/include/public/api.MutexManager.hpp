@@ -34,13 +34,6 @@ public:
      * @return A new mutex resource, or NULLPTR if an error has been occurred.
      */
     virtual Mutex* create() = 0;
-
-    /**
-     * @brief Removes a new mutex resource.
-     *
-     * @param mutex A created mutex resource.
-     */
-    virtual void remove(Mutex* mutex) = 0;
     
 };
 

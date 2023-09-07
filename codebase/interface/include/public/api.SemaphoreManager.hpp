@@ -35,13 +35,6 @@ public:
      * @return A new semaphore resource, or NULLPTR if an error has been occurred.
      */
     virtual Semaphore* create(int32_t permits) = 0;
-
-    /**
-     * @brief Removes a new semaphore resource.
-     *
-     * @param semaphore A created semaphore resource.
-     */     
-    virtual void remove(Semaphore* semaphore) = 0;
     
 };
 

@@ -44,10 +44,9 @@ public:
      */
     virtual ~Mutex()
     {
-        api::System& system = sys::Call::get();
-        if( system.hasMutexManager() )
+        if( mutex_ != NULLPTR )
         {
-            system.getMutexManager().remove(mutex_);
+            delete mutex_;
         }
     }
     

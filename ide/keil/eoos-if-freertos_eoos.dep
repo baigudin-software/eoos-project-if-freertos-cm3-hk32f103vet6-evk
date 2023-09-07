@@ -1,4 +1,0 @@
-Dependencies for Project 'eoos-if-freertos', Target 'eoos': (DO NOT MODIFY !)
-CompilerVersion: 6180000::V6.18::ARMCLANG
-F (..\..\codebase\drivers\cpu\hk\HK32F103xCxDxE\source\cpu.Boot.keil.s)(0x647CE754)(--target=arm-arm-none-eabi -mcpu=cortex-m3 -masm=auto -c-gdwarf-4-IC:/Users/baigu/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.0/Device/Include-Wa,armasm,--pd,"__UVISION_VERSION SETA 537" -Wa,armasm,--pd,"STM32F10X_HD SETA 1"-o ./cpu.boot.keil.o)
-F (..\..\codebase\drivers\cpu\hk\HK32F103xCxDxE\source\cpu.Interrupt.keil.s)(0x647CE7BC)(--target=arm-arm-none-eabi -mcpu=cortex-m3 -masm=auto -c-gdwarf-4-IC:/Users/baigu/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.0/Device/Include-Wa,armasm,--pd,"__UVISION_VERSION SETA 537" -Wa,armasm,--pd,"STM32F10X_HD SETA 1"-o ./cpu.interrupt.keil.o)

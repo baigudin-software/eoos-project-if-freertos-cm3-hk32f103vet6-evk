@@ -1,25 +1,25 @@
 /**
- * @file      lib.NonCopyable.hpp
+ * @file      cpu.NonCopyable.hpp
  * @author    Sergey Baigudin, sergey@baigudin.software
- * @copyright 2022-2023, Sergey Baigudin, Baigudin Software
+ * @copyright 2021-2023, Sergey Baigudin, Baigudin Software
  */
-#ifndef LIB_NONCOPYABLE_HPP_
-#define LIB_NONCOPYABLE_HPP_
+#ifndef CPU_NONCOPYABLE_HPP_
+#define CPU_NONCOPYABLE_HPP_
 
-#include "lib.Object.hpp"
+#include "cpu.Object.hpp"
 
 namespace eoos
 {
-namespace lib
+namespace cpu
 {
 
 /**
  * @class NonCopyable
- * @brief Next to root class of the operating system for objects which cannot be copied or moved.
+ * @brief Root class of the processor for objects which cannot be copied.
  *
- * @tparam A Heap memory allocator class. 
+ * @tparam A Heap memory allocator class.
  */
-template <class A = Allocator>
+template <class A>
 class NonCopyable : public Object<A>
 {
 
@@ -28,14 +28,12 @@ public:
     /**
      * @brief Constructor.
      */
-    NonCopyable() 
-        : Object<A>() {
-    }
+    NonCopyable();
 
     /**
      * @brief Destructor.
      */
-    virtual ~NonCopyable() {}
+    virtual ~NonCopyable();
     
 private:
     
@@ -59,12 +57,22 @@ private:
     /**
      * @copydoc eoos::Object::operator=(Object&&)
      */
-    NonCopyable& operator=(NonCopyable&&) & noexcept = delete;
+    NonCopyable& operator=(NonCopyable&&) noexcept = delete;
 
     #endif // EOOS_CPP_STANDARD >= 2011
 
 };
 
-} // namespace lib
+template <class A>
+NonCopyable<A>::NonCopyable() 
+    : Object<A>() {
+}
+
+template <class A>
+NonCopyable<A>::~NonCopyable()
+{
+}
+
+} // namespace cpu
 } // namespace eoos
-#endif // LIB_NONCOPYABLE_HPP_
+#endif // CPU_NONCOPYABLE_HPP_

@@ -6,7 +6,7 @@
 #ifndef API_MUTEX_HPP_
 #define API_MUTEX_HPP_
 
-#include "api.Object.hpp"
+#include "api.Guard.hpp"
 
 namespace eoos
 {
@@ -17,7 +17,7 @@ namespace api
  * @class Mutex
  * @brief Mutex interface.
  */    
-class Mutex : public Object
+class Mutex : public Guard
 {
 
 public:
@@ -33,18 +33,6 @@ public:
      * @return True if this mutex is locked successfully, or false if other thread locked on this mutex.
      */
     virtual bool_t tryLock() = 0;
-
-    /**
-     * @brief Locks this mutex.
-     *
-     * @return True if this mutex is locked successfully, or false if an error occurred.
-     */
-    virtual bool_t lock() = 0;
-
-    /**
-     * @brief Unlocks this mutex.
-     */
-    virtual void unlock() = 0;
 
 };
 
