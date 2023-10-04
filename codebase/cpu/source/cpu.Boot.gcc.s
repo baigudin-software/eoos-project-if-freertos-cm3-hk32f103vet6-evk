@@ -1,19 +1,22 @@
 /**
- * @brief Boot routine.
- *
- * The module initializes HK32F103x MCU and C/C++ run-time environment.
- *
  * @file      cpu.Boot.gcc.s
  * @author    Sergey Baigudin, sergey@baigudin.software
  * @copyright 2023, Sergey Baigudin, Baigudin Software
+ *
+ * @brief Boot routine.
+ *
+ * The module initializes HK32F103x MCU and C/C++ run-time environment.
  */
+                .arch armv7-m
                 .cpu cortex-m3
                 .fpu softvfp
+                .syntax unified                
                 .thumb
                 
                 .global     _start
                 .global     mg_bootstrap
                 .global     d_tos_main
+                .global     CpuBoot_startFirstTask
                     
                 .extern     main
                 .extern     CpuBoot_initialize
@@ -21,15 +24,18 @@
                 
                 .bss
                 .align  8
-d_eos_process:  .space  0x00000400
+d_eos_process:  .space  0x00000200
 d_tos_process:
 
                 .bss
                 .align  8
-d_eos_main:     .space  0x00000400
+d_eos_main:     .space  0x00000200
 d_tos_main:  
                     
                 .text
+/**
+ * @brief System timer routine.
+ */
                 .thumb_func
 mg_bootstrap:
                 /* Set processor PRIMASK and FAULTMASK values */
@@ -60,7 +66,7 @@ mc_copy_data:   ldr     r4, [r2, r3]
                 add     r3, r3, #4
 m_copy_data:    add     r4, r0, r3
                 cmp     r4, r1
-                bcc     mc_copy_data
+                bne     mc_copy_data
 
                 /* Zero .bss section */
                 ldr     r0, =_sbss
@@ -70,7 +76,7 @@ m_copy_data:    add     r4, r0, r3
 mc_zero_bss:    str     r3, [r0]
                 add     r0, r0, #4
 m_zero_bss:     cmp     r0, r1
-                bcc     mc_zero_bss
+                bne     mc_zero_bss
 
                 /* Call C/C++ environment initialization */
                 bl      CpuBoot_initialize 
@@ -84,7 +90,7 @@ m_zero_bss:     cmp     r0, r1
 mc_zero_stack0: str     r3, [r0]
                 add     r0, r0, #4
 m_zero_stack0:  cmp     r0, r1
-                bcc     mc_zero_stack0
+                bne     mc_zero_stack0
 
                 /* Fill process stack */
                 ldr     r0, =d_eos_process
@@ -95,7 +101,7 @@ m_zero_stack0:  cmp     r0, r1
 mc_zero_stack1: str     r3, [r0]
                 add     r0, r0, #4
 m_zero_stack1:  cmp     r0, r1
-                bcc     mc_zero_stack1
+                bne     mc_zero_stack1
 
                 /* Clean general purpose registers */
                 mov     r0,  #0
@@ -120,5 +126,25 @@ m_zero_stack1:  cmp     r0, r1
                 cpsid   f                
 mc_idle:        b       mc_idle
 
+                .align 4
 v_stack_fill:   .word   0xDAEDDAED
-    
+
+/**
+ * @fn void CpuBoot_startFirstTask(void);
+ * @brief Starts a first task.
+ *
+ * The function does not return control to a calling function.
+ */              
+                .thumb_func                
+CpuBoot_startFirstTask:
+                ldr	    r0, =pxCurrentTCB
+                ldr     r0, [r0]
+                ldr     sp, [r0]
+                ldmia   sp!, {r4-r11}
+                ldr     r1, [sp, #28]
+                msr     XPSR_nzcvq, r1
+                isb
+                ldmia   sp!, {r0-r3,r12,lr}
+                add     sp, #8
+                cpsie   i
+                ldr     pc, [sp, #-8]

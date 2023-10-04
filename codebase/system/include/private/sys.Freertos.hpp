@@ -8,4 +8,8 @@
 #ifndef SYS_FREERTOS_HPP_
 #define SYS_FREERTOS_HPP_
 
+#include "FreeRTOS.h"
+#include "task.h"
+#include "port.hpp"
+
 #endif // SYS_FREERTOS_HPP_

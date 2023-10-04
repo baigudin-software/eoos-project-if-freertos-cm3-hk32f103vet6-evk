@@ -1,21 +1,27 @@
 /**
- * @brief Interrupt low level module.
- * 
  * @file      cpu.Interrupt.gcc.s
  * @author    Sergey Baigudin, sergey@baigudin.software
  * @copyright 2023, Sergey Baigudin, Baigudin Software
+ *
+ * @brief Interrupt low level module.
  */
+                .arch armv7-m
                 .cpu cortex-m3
                 .fpu softvfp
+                .syntax unified
                 .thumb
                     
                 .global m_handle_reset
-                .global CpuInterruptGlobal_disable
-                .global CpuInterruptGlobal_enable
+                .global CpuInterruptController_jumpLow                
+                .global CpuInterruptGlobal_disableLow
+                .global CpuInterruptGlobal_enableLow
                 
                 .extern d_tos_main
                 .extern CpuInterruptController_handleException
 
+/**
+ * @brief Exception handler macro.
+ */
 .macro HANDLE_EXCEPTION name, index
                 .thumb_func
 \name:
@@ -23,6 +29,9 @@
                 b       m_handle_exception
 .endm
 
+/**
+ * @brief Exception vector table.
+ */
                 .section .exception_vectors, "ax"
                 .align  0                         /* EXN | IRQ | PRI | Description                                        */
 m_vectors:      .word   d_tos_main                /*  00 |   - |   - | Main stack pointer                                 */
@@ -39,8 +48,8 @@ m_vectors:      .word   d_tos_main                /*  00 |   - |   - | Main stac
                 .word   m_handle_svcall           /*  11 |  -5 |   3 | System handler SVCall                              */
                 .word   m_handle_debugmon         /*  12 |   - |   4 | Debug Monitor                                      */
                 .word   0                         /*  13 |   - |   - | Reserved                                           */
-                .word   m_handle_pendsv           /*  14 |  -2 |   5 | System handler PendSV                              */
-                .word   m_handle_systick          /*  15 |  -1 |   6 | System handler SysTick                             */
+                .word   m_handle_pendsv           /*  14 |  -2 |   5 | System ISR PendSV                                  */
+                .word   m_handle_systick          /*  15 |  -1 |   6 | System ISR SysTick                                 */
                 .word   m_handle_wwdg             /*  16 |   0 |   7 | ISR Window Watchdog                                */
                 .word   m_handle_pvd              /*  17 |   1 |   8 | ISR PVD through EXTI Line detect                   */
                 .word   m_handle_tamper           /*  18 |   2 |   9 | ISR Tamper                                         */
@@ -103,23 +112,17 @@ m_vectors:      .word   d_tos_main                /*  00 |   - |   - | Main stac
                 .word   m_handle_dma2_channel4_5  /*  75 |  59 |  66 | ISR DMA2 Channel 4 and Channel 5 Global Interrupts */
 
                 .text
-                .thumb_func
-m_handle_reset:
-                /* Set Vector Table Offset Register (VTOR) */
-                ldr     r0, =0xE000ED08
-                ldr     r1, =m_vectors
-                str     r1, [r0]
-                b       mg_bootstrap
-
+/**
+ * @brief Common exception routine enterence.
+ */
 HANDLE_EXCEPTION m_handle_nmi              2
 HANDLE_EXCEPTION m_handle_hardfault        3
 HANDLE_EXCEPTION m_handle_memmanage        4
 HANDLE_EXCEPTION m_handle_busfault         5   
 HANDLE_EXCEPTION m_handle_usagefault       6
-HANDLE_EXCEPTION m_handle_svcall           11
+HANDLE_EXCEPTION m_handle_svcall_common    11
 HANDLE_EXCEPTION m_handle_debugmon         12              
 HANDLE_EXCEPTION m_handle_pendsv           14
-HANDLE_EXCEPTION m_handle_systick          15
 HANDLE_EXCEPTION m_handle_wwdg             16
 HANDLE_EXCEPTION m_handle_pvd              17
 HANDLE_EXCEPTION m_handle_tamper           18
@@ -181,19 +184,136 @@ HANDLE_EXCEPTION m_handle_dma2_channel2    73
 HANDLE_EXCEPTION m_handle_dma2_channel3    74
 HANDLE_EXCEPTION m_handle_dma2_channel4_5, 75
 
+/**
+ * @brief Common exception routine.
+ */
                 .thumb_func
 m_handle_exception:
                 mov     r8, lr
-                bl      CpuInterruptController_handleException               
+                bl      CpuInterruptController_handleException
                 bx      r8
 
+/**
+ * @brief Reset vector routine.
+ */
                 .thumb_func
-CpuInterruptGlobal_disable:
+m_handle_reset:
+                /* Set Vector Table Offset Register (VTOR) */
+                ldr     r0, =0xE000ED08
+                ldr     r1, =m_vectors
+                str     r1, [r0]
+                b       mg_bootstrap
+
+/**
+ * @brief SVC call routine.
+ *
+ * @param R0 Exception number to jump on SVC #0xFF. 
+ */
+                .thumb_func
+m_handle_svcall:
+                /* Extract SVC instruction operand to R12 */
+                mrs     r12, PSP
+                ldr     r12, [r12, #24]
+                ldrb    r12, [r12, #-2]
+                /* Check if SVC command is 0xFF */
+                cmp     r12, #0xFF
+                beq     m_handle_svcall_ff
+                /* Do common handler if no special command given */                
+                b       m_handle_svcall_common
+
+/**
+ * @brief SVC 0xFF call routine.
+ *
+ * @param R0 Exception number to jump on SVC #0xFF. 
+ */
+                .thumb_func 
+m_handle_svcall_ff:
+                ldr     r1, =m_vectors
+                lsl     r0, r0, #2
+                add     r1, r1, r0
+                ldr     pc, [r1]
+
+/**
+ * @brief System timer routine.
+ * @see ARMv7-M Architecture Reference Manual, B1.5.6
+ *
+ * The routine extends ARMv7-M exception entry behavior by pushing registers on stack.
+ * The saved stack is shown below:
+ *
+ * | R4      | <- PSP of a task on SW save
+ * | R5      |
+ * | R6      |
+ * | R7      |
+ * | R8      |
+ * | R9      |
+ * | R10     |
+ * | R11     |
+ * | R0      | <- PSP of a task on HW save
+ * | R1      |
+ * | R2      |
+ * | R3      |
+ * | R12     |
+ * | R14(LR) |
+ * | R15(PC) |  = PC of a task is return address
+ * | xPSR    |
+ * |         | <- PSP of a task on run
+ *
+ * Note that Thread mode uses SP_process and Handler mode uses SP_main, thus
+ * the task R13(SP) on enerence saves in PSP, and the routine use MSP.
+ */
+                .thumb_func
+m_handle_systick:
+                /* Save the remained registers on the Process stack of interrupted thread */
+                mrs     r0, psp
+                isb
+                stmdb   r0!, {r4-r11}
+                /* Save new SP of interrupted thread to pxCurrentTCB->pxTopOfStack */                
+                ldr	    r7, pxCurrentTCBConst
+                ldr	    r1, [r7]
+                str     r0, [r1]                
+                /* Call the exception high level routine */
+                mov     r0, #15
+                mov     r8, lr
+                bl      CpuInterruptController_handleException
+                mov     lr, r8
+                /* Load saved SP of a new thread from pxCurrentTCB->pxTopOfStack */                
+                ldr     r1, [r7]
+                ldr     r0, [r1]
+                /* Load the remained registers from the Process stack of a new thread */                
+                ldmia   r0!, {r4-r11}
+                msr     psp, r0
+                isb	
+                bx      lr
+pxCurrentTCBConst: .word pxCurrentTCB
+
+/**
+ * @fn void CpuInterruptController_jumpLow();
+ * @brief Jumps to the exception handler.
+ *
+ * @param R0 Exception number.
+ */
+                .thumb_func
+CpuInterruptController_jumpLow:
+                svc     #0xFF
+                bx      lr
+    
+/**
+ * @fn bool CpuInterruptGlobal_disable();
+ * @brief Sets PRIMASK to 1 raises the execution priority to 0.
+ *
+ * @return Value of PRIMASK bit before the function called.
+ */
+                .thumb_func
+CpuInterruptGlobal_disableLow:
                 mrs     r0, PRIMASK
                 cpsid   i
                 bx      lr
 
+/**
+ * @fn void CpuInterruptGlobal_enable();
+ * @brief Sets PRIMASK to 0 raises the execution priority to base level.
+ */
                 .thumb_func
-CpuInterruptGlobal_enable:
+CpuInterruptGlobal_enableLow:
                 cpsie   i
                 bx      lr

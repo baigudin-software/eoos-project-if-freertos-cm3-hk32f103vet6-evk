@@ -11,6 +11,26 @@ namespace eoos
 namespace cpu
 {
     
+/**
+ * @brief Jumps to the exception handler.
+ *
+ * @param exception Exception number.
+ * @note The function relies the exception argument is valid, as
+ *       it has ASM implementation and difficulty to check the argument.
+ */
+extern "C" void CpuInterruptController_jumpLow(int32_t exception);
+
+/**
+ * @brief Handles exceptions.
+ *
+ * @param exception Exception number.
+ */
+extern "C" void CpuInterruptController_handleException(int32_t exception)
+{
+    InterruptController::handleException(exception);
+}
+
+    
 api::Heap* InterruptController::heap_( NULLPTR );
 
 InterruptController* InterruptController::this_( NULLPTR );
@@ -59,6 +79,15 @@ api::Guard& InterruptController::getGlobal()
     return gie_;
 }
 
+void InterruptController::jump(int32_t exception)
+{
+    if( !Interrupt<InterruptController>::isException(exception) )
+    {
+        return;
+    }
+    CpuInterruptController_jumpLow(exception);
+}
+
 bool_t InterruptController::construct()
 {
     bool_t res( false );
@@ -103,11 +132,13 @@ void InterruptController::free(void* ptr)
 
 void InterruptController::handleException(int32_t exception)
 {
+    #ifdef EOOS_DEBUG_MODE
+    // As soon as ISR must be as fast as possible, do these checkes only in debug mode.
     if( this_ == NULLPTR )
     {
         return;
     }
-    if( exception >= Interrupt<InterruptController>::EXCEPTION_LAST )
+    if( !Interrupt<InterruptController>::isException(exception) )
     {
         return;
     }
@@ -115,6 +146,7 @@ void InterruptController::handleException(int32_t exception)
     {
         return;
     }
+    #endif // EOOS_DEBUG_MODE
     this_->data_.handlers[exception]->start();
 }
 
@@ -133,21 +165,6 @@ void InterruptController::deinitialize()
 {
     heap_ = NULLPTR;
     this_ = NULLPTR;
-}
-
-extern "C"
-{
-
-/**
- * @brief Handles exceptions.
- *
- * @param exception Exception number.
- */
-void CpuInterruptController_handleException(int32_t exception)
-{
-    InterruptController::handleException(exception);
-}
-
 }
     
 } // namespace cpu

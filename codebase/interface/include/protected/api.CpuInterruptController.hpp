@@ -45,6 +45,13 @@ public:
      * @returns Global interrupt controller.
      */      
     virtual api::Guard& getGlobal() = 0;
+    
+    /**
+     * @brief Jumps to interrupt service routine.
+     *
+     * @param source Interrupt source number.
+     */      
+    virtual void jump(int32_t source) = 0;
 
 };
 

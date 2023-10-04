@@ -21,8 +21,7 @@
  */
 int main(int const argc, char** const argv) try
 {
-    ::eoos::sys::System eoos;
-    ::eoos::int32_t const error( eoos.execute(argc, argv) );
+    eoos::int32_t const error( eoos::sys::System::run(argc, argv) );
     return static_cast<int>(error); ///< SCA MISRA-C++:2008 Justified Rule 3-9-2
 } 
 catch (...) 

@@ -9,7 +9,14 @@ namespace eoos
 {
 namespace cpu
 {
-    
+
+/**
+ * @brief Starts a first task.
+ *
+ * The function does not return control to a calling function.
+ */              
+extern "C" void CpuBoot_startFirstTask(void);
+
 Processor::Processor()
     : NonCopyable<NoAllocator>()
     , api::CpuProcessor()
@@ -29,6 +36,11 @@ Processor::~Processor()
 bool_t Processor::isConstructed() const
 {
     return Parent::isConstructed();
+}
+
+void Processor::bootPrimaryThread()
+{
+    CpuBoot_startFirstTask();
 }
 
 const char_t* Processor::getName() const

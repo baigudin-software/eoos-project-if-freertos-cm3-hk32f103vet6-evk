@@ -43,6 +43,11 @@ public:
      * @copydoc eoos::api::Object::isConstructed()
      */
     virtual bool_t isConstructed() const;
+    
+    /**
+     * @copydoc eoos::api::CpuProcessor::bootPrimaryThread()
+     */    
+    virtual void bootPrimaryThread();
 
     /**
      * @copydoc eoos::api::CpuProcessor::getName()

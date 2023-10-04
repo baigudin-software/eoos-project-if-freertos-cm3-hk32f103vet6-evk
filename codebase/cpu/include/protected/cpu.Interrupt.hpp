@@ -170,6 +170,14 @@ public:
      */
     virtual void enable();
     
+    /**
+     * @brief Test if exception number is valid.
+     *
+     * @param exception Exception number.
+     * @return True is is valid.
+     */
+    static bool_t isException(int32_t exception);
+
 protected:
 
     using Parent::setConstructed;
@@ -305,6 +313,24 @@ void Interrupt<A>::enable()
 }
 
 template <class A>
+bool_t Interrupt<A>::isException(int32_t exception)
+{
+    if(EXCEPTION_NMI <= exception && exception < EXCEPTION_USAGEFAULT)
+    {
+        return true;
+    }
+    if(EXCEPTION_SVCALL <= exception && exception <= EXCEPTION_DEBUGMON)
+    {
+        return true;
+    }    
+    if(EXCEPTION_PENDSV <= exception && exception <= EXCEPTION_DMA2_CHANNEL4_5)
+    {
+        return true;
+    }
+    return false;
+}
+
+template <class A>
 void Interrupt<A>::disableIrq()
 {
     int32_t const irq = exception_ - EXCEPTION_FIRST_IRQ;
@@ -349,6 +375,10 @@ bool_t Interrupt<A>::construct()
     do 
     {
         if( !isConstructed() )
+        {
+            break;
+        }
+        if( !isException(exception_) )
         {
             break;
         }

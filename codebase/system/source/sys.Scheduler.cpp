@@ -60,9 +60,12 @@ bool_t Scheduler::sleep(int32_t ms)
     if( isConstructed() )
     {
         int32_t time( ms / 1000 );
-        sSleep(time);
-        time = ms % 1000;
-        res = msSleep(time);
+        res = sSleep(time);
+        if( res == true )
+        {
+            time = ms % 1000;
+            res = msSleep(time);
+        }
     }
     return res;
 }
@@ -71,12 +74,28 @@ void Scheduler::yield()
 {
     if( isConstructed() )
     {
-//TODO        int_t const error( ::sched_yield() );
-//TODO        if(error != 0)
-//TODO        {   ///< UT Justified Branch: OS dependency
-//TODO            setConstructed(false);
-//TODO        }
+        taskYIELD();
     }
+}
+
+api::CpuInterrupt* Scheduler::getTimerInterrupt()
+{
+    api::CpuInterrupt* res( NULLPTR );
+    if( isConstructed() )
+    {
+        res = int_;
+    }
+    return res;
+}
+
+api::CpuTimer* Scheduler::getTimer()
+{
+    api::CpuTimer* res( NULLPTR );
+    if( isConstructed() )
+    {
+        res = tim_;
+    }
+    return res;
 }
 
 bool_t Scheduler::construct()
@@ -109,26 +128,31 @@ bool_t Scheduler::construct()
     return res;
 }
 
-void Scheduler::sSleep(int32_t const s)
-{
-//TODO    uint_t sec( static_cast<uint_t>(s) );
-//TODO    while(sec != 0U)
-//TODO    {
-//TODO        sec = ::sleep(sec);
-//TODO    }
-}    
-
-bool_t Scheduler::msSleep(int32_t const ms)
+bool_t Scheduler::sSleep(int32_t s)
 {
     bool_t res( false );
-    if( (0 < ms) && (ms < 1000) )
+    if( (0 < s) && (QUANT_US <= 1000) )
+    {    
+        // @todo Check range of TickType_t and the calculation rage, after do check the argument in the range.
+        ::TickType_t const quantsInSec ( static_cast<::TickType_t>(1000000 / QUANT_US) );
+        ::TickType_t const sec ( static_cast<::TickType_t>(s) );
+        ::TickType_t xTicksToDelay( sec * quantsInSec );
+        ::vTaskDelay(xTicksToDelay);
+        res = true;
+    }
+    return res;
+}    
+
+bool_t Scheduler::msSleep(int32_t ms)
+{
+    bool_t res( false );
+    if( (0 < ms) && (ms < 1000) && (QUANT_US <= 1000) )
     {
-//TODO        ::useconds_t const us( static_cast< ::useconds_t >(ms) * 1000U );
-//TODO        int_t const error( ::usleep(us) );
-//TODO        if(error == 0)
-//TODO        {
-//TODO            res = true;
-//TODO        }
+        ::TickType_t const quantsInMsec ( static_cast<::TickType_t>(1000 / QUANT_US) );
+        ::TickType_t const msec ( static_cast<::TickType_t>(ms) );
+        ::TickType_t xTicksToDelay( msec * quantsInMsec );
+        ::vTaskDelay( xTicksToDelay );
+        res = true;
     }
     return res;
 }
@@ -174,7 +198,7 @@ bool_t Scheduler::initialize(api::Heap* heap)
         {
             break;
         }
-        if( !tim_->setPeriod(QUANT) )
+        if( !tim_->setPeriod(QUANT_US) )
         {
             break;
         }

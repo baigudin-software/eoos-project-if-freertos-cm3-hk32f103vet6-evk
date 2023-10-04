@@ -4,25 +4,32 @@
  * @copyright 2014-2023, Sergey Baigudin, Baigudin Software
  */
 #include "sys.System.hpp"
-#include "Program.hpp"
+#include "sys.ThreadPrimary.hpp"
 
 namespace eoos
 {
 namespace sys
 {
-
-System* System::eoos_( NULLPTR );
     
-uint32_t System::varBss_;
-uint64_t System::varDataByConstant_( 0xCAE0ABCD );
-uint32_t System::varDataByFunction_( System::getCheckValue() );
-System::Check System::varObjectByDefault_;
-System::Check System::varObjectByValue_( 0x0137EDA0 );
-System::Check System::varObjectByTwoValues_( 0xABCD0000, 0x00001234 );
+/**
+ * @brief EOOS system memory pull.
+ * 
+ * @note Memory is uint64_t type to be align 8.  
+ */
+static uint64_t memory_[(sizeof(System) >> 3) + 1]; 
+
+System*         System::eoos_( NULLPTR );    
+uint32_t        System::varBss_;
+uint64_t        System::varDataByConstant_( 0xCAE0ABCD );
+uint32_t        System::varDataByFunction_( System::getCheckValue() );
+System::Check   System::varObjectByDefault_;
+System::Check   System::varObjectByValue_( 0x0137EDA0 );
+System::Check   System::varObjectByTwoValues_( 0xABCD0000, 0x00001234 );
 
 System::System()
     : NonCopyable<NoAllocator>()
     , api::System()
+    , api::SystemPort()
     , cpu_()
     , heap_()
     , scheduler_(cpu_)
@@ -118,20 +125,75 @@ api::StreamManager& System::getStreamManager()
     return streamManager_; ///< SCA MISRA-C++:2008 Justified Rule 9-3-2
 }
 
-int32_t System::execute()
-{
-    char_t* args[] = {NULLPTR};
-    return execute(0, args); ///< SCA MISRA-C++:2008 Justified Rule 5-2-12
-}    
-
-int32_t System::execute(int32_t argc, char_t* argv[])
+api::CpuProcessor& System::getProcessor()
 {
     if( !isConstructed() )
     {   ///< UT Justified Branch: HW dependency
-        exit(ERROR_SYSTEM_ABORT);
+        exit(ERROR_SYSCALL_CALLED);
     }
-    cpu_.getInterruptController().getGlobal().unlock();
-    return Program::start(argc, argv);
+    return cpu_;
+}
+
+api::CpuInterrupt& System::getTimerInterrupt()
+{
+    if( !isConstructed() )
+    {   ///< UT Justified Branch: HW dependency
+        exit(ERROR_SYSCALL_CALLED);
+    }
+    api::CpuInterrupt* const intTim( scheduler_.getTimerInterrupt() );
+    if( intTim == NULLPTR )
+    {
+        exit(ERROR_SYSCALL_CALLED);
+    }
+    return *intTim;
+}
+
+api::CpuTimer& System::getTimer()
+{
+    if( !isConstructed() )
+    {   ///< UT Justified Branch: HW dependency
+        exit(ERROR_SYSCALL_CALLED);
+    }
+    api::CpuTimer* const tim( scheduler_.getTimer() );
+    if( tim == NULLPTR )
+    {
+        exit(ERROR_SYSCALL_CALLED);
+    }
+    return *tim;    
+}
+
+int32_t System::execute(int32_t argc, char_t* argv[])
+{
+    int32_t error( ERROR_SYSTEM_ABORT );
+    if( isConstructed() )
+    {   
+        ThreadPrimary thread(scheduler_, argc, argv);
+        if( thread.execute() )
+        {
+            Kernel::execute(*eoos_);
+            thread.join();
+        }
+        error = thread.getError();
+    }
+    return error;
+}
+
+int32_t System::run()
+{
+    char_t* argv[] = {NULLPTR};
+    return run(0, argv);
+}
+
+int32_t System::run(int32_t argc, char_t** argv)
+{
+    int32_t error( ERROR_UNDEFINED );
+    System* const eoos( new System );
+    if( eoos != NULLPTR )
+    {
+        error = eoos->execute(argc, argv);
+        delete eoos;
+    }
+    return error;
 }
 
 System& System::getSystem()
@@ -230,6 +292,20 @@ bool_t System::isVarChecked()
         res = false;
     }
     return res;
+}
+
+void* System::operator new(size_t size)
+{
+    void* memory( NULLPTR );
+    if( size == sizeof(System) && eoos_ == NULLPTR )
+    {
+        memory = reinterpret_cast<void*>(memory_);
+    }
+    return memory;
+}
+
+void System::operator delete(void* const ptr)
+{
 }
 
 System::Check::Check()

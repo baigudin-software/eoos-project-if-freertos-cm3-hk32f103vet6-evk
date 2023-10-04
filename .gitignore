@@ -31,6 +31,16 @@ Release
 *.bak
 *.iex
 *.__i
+*.d
+
+*.scvd
+JLinkLog.txt
+JLinkSettings.ini
+*.build_log.htm
+*.elf
+*.uvguix.*
+*.dep
+
 
 # VS Code project files
 .vscode

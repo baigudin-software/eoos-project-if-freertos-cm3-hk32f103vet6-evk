@@ -74,7 +74,7 @@ public:
      * @param ptr  Address of memory.
      * @return The address of memory.
      */
-    void* operator new(size_t, uint32_t ptr)
+    static void* operator new(size_t, uint32_t ptr)
     {
         return reinterpret_cast<void*>(ptr);
     }

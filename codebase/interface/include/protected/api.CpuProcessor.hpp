@@ -31,6 +31,13 @@ public:
     virtual ~CpuProcessor() = 0;
     
     /**
+     * @brief Boots primary thread of RTOS. 
+     *
+     * @return No return.
+     */    
+    virtual void bootPrimaryThread() = 0;
+    
+    /**
      * @brief Returns a name of a target Central Processing Unit. 
      *
      * The function should return a certain name of target CPU, 
@@ -39,7 +46,7 @@ public:
      * but basically the case is an exception.
      *
      * @return CPU name, or NULL if an error has been occurred.
-     */      
+     */
     virtual const char_t* getName() const = 0;
 
     /**

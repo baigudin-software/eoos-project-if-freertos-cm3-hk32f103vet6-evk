@@ -8,6 +8,7 @@
 
 #include "sys.NonCopyable.hpp"
 #include "api.System.hpp"
+#include "api.SystemPort.hpp"
 #include "cpu.Processor.hpp"
 #include "sys.Heap.hpp"
 #include "sys.Scheduler.hpp"
@@ -25,21 +26,11 @@ namespace sys
  * @class System
  * @brief The operating system.
  */
-class System : public NonCopyable<NoAllocator>, public api::System
+class System : public NonCopyable<NoAllocator>, public api::System, public api::SystemPort
 {
     typedef NonCopyable<NoAllocator> Parent;
 
 public:
-
-    /**
-     * @brief Constructor.
-     */
-    System();
-
-    /**
-     * @brief Destructor.
-     */
-    virtual ~System();
 
     /**
      * @copydoc eoos::api::Object::isConstructed()
@@ -85,22 +76,37 @@ public:
      * @copydoc eoos::api::System::getStreamManager()
      */
     virtual api::StreamManager& getStreamManager();
-
-    /**
-     * @brief Executes the operating system.
-     *
-     * @return Zero, or error code if the execution has been terminated.
-     */
-    int32_t execute();
     
     /**
-     * @brief Executes the operating system.
+     * @copydoc eoos::api::SystemPort::getProcessor()
+     */
+    virtual api::CpuProcessor& getProcessor();
+    
+    /**
+     * @copydoc eoos::api::SystemPort::getTimerInterrupt()
+     */
+    virtual api::CpuInterrupt& getTimerInterrupt();
+    
+    /**
+     * @copydoc eoos::api::SystemPort::getTimerInterrupt()
+     */
+    virtual api::CpuTimer& getTimer();
+    
+    /**
+     * @brief Runs the EOOS system.
+     *
+     * @return error code or zero.
+     */
+    static int32_t run();
+
+    /**
+     * @brief Runs the EOOS system.
      *
      * @param argc The number of arguments passed to the program.
-     * @param argv An array of c-string of arguments where the last one - argc + 1 is null.
-     * @return Zero, or error code if the execution has been terminated.
+     * @param argv An array of c-string of arguments where the last one - argc + 1 is null. 
+     * @return error code or zero.
      */
-    int32_t execute(int32_t argc, char_t* argv[]);
+    static int32_t run(int32_t argc, char_t** argv);
 
     /**
      * @brief Returns an only one created instance of the EOOS system.
@@ -142,6 +148,16 @@ private:
         uint32_t value;
 
     };
+    
+    /**
+     * @brief Constructor.
+     */
+    System();
+
+    /**
+     * @brief Destructor.
+     */
+    virtual ~System();    
 
     /**
      * @brief Constructs this object.
@@ -149,6 +165,15 @@ private:
      * @return True if object has been constructed successfully.
      */
     bool_t construct();
+    
+    /**
+     * @brief Executes the operating system.
+     *
+     * @param argc The number of arguments passed to the program.
+     * @param argv An array of c-string of arguments where the last one - argc + 1 is null.
+     * @return Zero, or error code if the execution has been terminated.
+     */
+    int32_t execute(int32_t argc, char_t* argv[]);    
     
     /**
      * @brief Terminates the system execution.
@@ -170,6 +195,21 @@ private:
      * @param True if values are correct.
      */
     static bool_t isVarChecked();
+    
+    /**
+     * @brief Operator new.
+     *
+     * @param size A number of bytes of this class.
+     * @return The address memory_[] array.
+     */
+    static void* operator new(size_t size);
+    
+    /**
+     * @brief Operator delete.
+     *
+     * @param ptr An address of allocated memory block or a null pointer.
+     */
+    static void operator delete(void* const ptr);    
 
     /**
      * @brief The operating system.

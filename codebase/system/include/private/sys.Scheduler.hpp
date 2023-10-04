@@ -60,6 +60,20 @@ public:
      * @copydoc eoos::api::Scheduler::yield()
      */
     virtual void yield();
+    
+    /**
+     * @brief Returns timer interrupt resource.
+     *
+     * @return Timer interrupt resource address.
+     */
+    api::CpuInterrupt* getTimerInterrupt();
+
+    /**
+     * @brief Returns timer resource.
+     *
+     * @return Timer resource address.
+     */
+    api::CpuTimer* getTimer();
 
     /**
      * @brief Allocates memory.
@@ -93,8 +107,9 @@ private:
      * @brief Causes current thread to sleep in seconds.
      *
      * @param s A time to sleep in seconds.
+     * @return true if no system errors occured.
      */
-    static void sSleep(int32_t const s);
+    static bool_t sSleep(int32_t s);
     
     /**
      * @brief Causes current thread to sleep in milliseconds.
@@ -102,7 +117,7 @@ private:
      * @param ms A time to sleep in milliseconds.
      * @return true if no system errors occured.
      */
-    static bool_t msSleep(int32_t const ms);
+    static bool_t msSleep(int32_t ms);
 
     /**
      * @brief Initializes the allocator with heap for allocation.
@@ -120,7 +135,7 @@ private:
     /**
      * @brief Scheduler system tick in microseconds.
      */  
-    static const int64_t QUANT = 1000;
+    static const int64_t QUANT_US = 1000;
 
     /**
      * @brief Heap for allocation.

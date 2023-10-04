@@ -9,6 +9,13 @@
 #define DEFINITIONS_HPP_
 
 /**
+ * @brief EOOS project is compiled in debug mode.
+ *
+ * @todo Set this definition based on global compiler defines.
+ */
+#define EOOS_DEBUG_MODE
+
+/**
  * @brief C++ language standard definition.
  */
 #ifdef __cplusplus

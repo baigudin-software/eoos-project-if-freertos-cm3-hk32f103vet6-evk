@@ -81,32 +81,14 @@ private:
     /**
      * @brief Starts a thread routine.
      *
-     * @param argument Pointer to arguments passed by the POSIX pthread_create function.
+     * @param pvParameters Pointer to arguments passed to the thread.
      */
-    static void* start(void* argument);
+    static void start(void* pvParameters);
 
-//TODO    /**
-//TODO     * @struct The pthread attr container for the pthread_create function
-//TODO     * @brief The struct implements RAII approach on pthread_attr_t.
-//TODO     */
-//TODO    struct PthreadAttr
-//TODO    {
-//TODO        /**
-//TODO         * @brief Attributes of the pthread_create function.
-//TODO         */
-//TODO        ::pthread_attr_t attr; ///< SCA MISRA-C++:2008 Justified Rule 9-5-1 and Rule 11-0-1
-//TODO        
-//TODO        /**
-//TODO         * @brief Constructor of not constructed object.
-//TODO         */        
-//TODO        PthreadAttr();
-//TODO        
-//TODO        /**
-//TODO         * @brief Destructor.
-//TODO         */        
-//TODO        ~PthreadAttr();
-//TODO
-//TODO    };    
+    /**
+     * @brief Nubmer of stack elements of uint32_t.
+     */    
+    static const uint32_t THREAD_STACK_DEPTH = EOOS_SYS_FREERTOS_TASK_STACK_SIZE / 4;
     
     /**
      * @brief User executing runnable interface.
@@ -126,8 +108,17 @@ private:
     /**
      * @brief The new thread resource identifier.
      */
-//TODO    ::pthread_t thread_;
-    uint32_t thread_;
+    ::TaskHandle_t thread_;
+    
+    /**
+     * @brief FreeRTOS Task Control Block.
+     */     
+    ::StaticTask_t tcb_;
+
+    /**
+     * @brief Stack of this thread aligened 8.
+     */ 
+    uint64_t stack_[THREAD_STACK_DEPTH / 2];
 
 };
 
@@ -135,10 +126,11 @@ template <class A>
 Thread<A>::Thread(api::Task& task) 
     : NonCopyable<A>()
     , api::Thread()
-    , task_ (&task)
-    , status_ (STATUS_NEW)
-    , priority_ (PRIORITY_NORM)
-    , thread_ (0) {
+    , task_( &task )
+    , status_( STATUS_NEW )
+    , priority_( PRIORITY_NORM )
+    , thread_( NULL )
+    , tcb_() {
     bool_t const isConstructed( construct() );
     setConstructed( isConstructed );
 }
@@ -146,14 +138,11 @@ Thread<A>::Thread(api::Task& task)
 template <class A>
 Thread<A>::~Thread()
 {
-//TODO    if( thread_ != 0U )
-//TODO    {
-//TODO        // @todo The thread detaching means the thread will still be executed by OS.
-//TODO        // Thus, to keep compatibility, common approach for all OSs shall be found
-//TODO        // for using pthread_cancel function to cancel the thread execution forcely.
-//TODO        static_cast<void>( ::pthread_detach(thread_) );
-//TODO        status_ = STATUS_DEAD;            
-//TODO    }
+    if( thread_ != NULL )
+    {
+        ::vTaskDelete( thread_ );
+        status_ = STATUS_DEAD;            
+    }
 }
 
 template <class A>
@@ -175,24 +164,28 @@ bool_t Thread<A>::execute()
         {
             break;
         }
-//TODO        int_t error( 0 );
-//TODO        PthreadAttr pthreadAttr; ///< SCA MISRA-C++:2008 Justified Rule 9-5-1
-//TODO        size_t const stackSize( task_->getStackSize() );
-//TODO        if(stackSize != 0U)
-//TODO        {
-//TODO            error = ::pthread_attr_setstacksize(&pthreadAttr.attr, stackSize);
-//TODO            if(error != 0)
-//TODO            {   ///< UT Justified Branch: OS dependency
-//TODO                break;
-//TODO            }
-//TODO        }
-//TODO        error = ::pthread_create(&thread_, &pthreadAttr.attr, &start, &task_);
-//TODO        if(error != 0)
-//TODO        {   ///< UT Justified Branch: OS dependency
-//TODO            break;
-//TODO        }
-//TODO        status_ = STATUS_RUNNABLE;
-//TODO        res = true;
+        ::TaskFunction_t pvTaskCode( start );
+        const char* pcName( "EOOS Thread" );
+        uint32_t ulStackDepth( THREAD_STACK_DEPTH );
+        void* pvParameters( this );
+        ::UBaseType_t uxPriority( tskIDLE_PRIORITY + 1 );
+        ::StackType_t* puxStackBuffer( reinterpret_cast<::StackType_t*>(stack_) );
+        ::StaticTask_t* pxTaskBuffer( &tcb_ );
+        thread_ = ::xTaskCreateStatic( 
+            pvTaskCode,         // The function that implements the task.
+            pcName,             // The text name assigned to the task - for debug only as it is not used by the kernel.
+            ulStackDepth,       // The size of the stack to allocate to the task.
+            pvParameters,       // The parameter passed to the task - just to check the functionality.
+            uxPriority,         // The priority assigned to the task.
+            puxStackBuffer,     // The stack buffer
+            pxTaskBuffer        // The task control block
+        );
+        if( thread_ == NULL )
+        {
+            break;
+        }        
+        status_ = STATUS_RUNNABLE;
+        res = true;
     } while(false);
     return res;        
 }
@@ -203,9 +196,15 @@ bool_t Thread<A>::join()
     bool_t res( false );    
     if( isConstructed() && (status_ == STATUS_RUNNABLE) )
     {
-//TODO        int_t const error( ::pthread_join(thread_, NULL) );
-//TODO        res = (error == 0) ? true : false;
-//TODO        status_ = STATUS_DEAD;
+        while(true)
+        {
+            if(status_ == STATUS_DEAD)
+            {
+                res = true;
+                break;
+            }
+            taskYIELD();
+        }
     }
     return res;
 }
@@ -270,56 +269,36 @@ bool_t Thread<A>::construct()
 }
 
 template <class A>
-void* Thread<A>::start(void* argument)
+void Thread<A>::start(void* pvParameters)
 {
-//TODO    if(argument == NULLPTR) 
-//TODO    {   ///< UT Justified Branch: SW dependency
-//TODO        return NULLPTR;
-//TODO    }
-//TODO    api::Task* const task( *reinterpret_cast<api::Task**>(argument) ); ///< SCA MISRA-C++:2008 Justified Rule 5-2-8
-//TODO    if(task == NULLPTR)
-//TODO    {   ///< UT Justified Branch: HW dependency
-//TODO        return NULLPTR;
-//TODO    }
-//TODO    if( !task->isConstructed() )
-//TODO    {   ///< UT Justified Branch: HW dependency
-//TODO        return NULLPTR;
-//TODO    }        
-//TODO    int_t oldtype;
-//TODO    // The thread is cancelable.  This is the default
-//TODO    // cancelability state in all new threads, including the
-//TODO    // initial thread.  The thread's cancelability type
-//TODO    // determines when a cancelable thread will respond to a
-//TODO    // cancellation request.
-//TODO    int_t error( ::pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &oldtype) );
-//TODO    if(error != 0)
-//TODO    {   ///< UT Justified Branch: OS dependency
-//TODO        return NULLPTR;
-//TODO    }
-//TODO    // The thread can be canceled at any time. Typically, it
-//TODO    // will be canceled immediately upon receiving a cancellation
-//TODO    // request, but the system doesn't guarantee this.
-//TODO    error = ::pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
-//TODO    if(error != 0)
-//TODO    {   ///< UT Justified Branch: OS dependency
-//TODO        return NULLPTR;
-//TODO    }
-//TODO    task->start();
-//TODO    return NULLPTR;
-    return NULLPTR;
+    Thread* thread( NULLPTR );
+    do
+    {
+        thread = reinterpret_cast<Thread*>(pvParameters);
+        if(thread == NULLPTR)
+        {   
+            break;
+        }
+        if( !thread->isConstructed() )
+        {
+            break;
+        }                
+        if( !thread->task_->isConstructed() )
+        {
+            break;
+        }        
+        thread->task_->start();
+        thread->status_ = STATUS_DEAD;
+    } while(false);
+    if(thread != NULLPTR)
+    {
+        ::vTaskSuspend(thread->thread_);
+    }
+    // @note From The FreeRTOS Reference Manual:
+    // Tasks are simply C functions that never exit and, 
+    // as such, are normally implemented as an infinite loop.    
+    while(true){}
 }
-
-//TODO template <class A>
-//TODO Thread<A>::PthreadAttr::PthreadAttr()
-//TODO {
-//TODO     static_cast<void>( ::pthread_attr_init(&attr) );
-//TODO }
-//TODO 
-//TODO template <class A>
-//TODO Thread<A>::PthreadAttr::~PthreadAttr()
-//TODO {
-//TODO     static_cast<void>( ::pthread_attr_destroy(&attr) );
-//TODO }
 
 } // namespace sys
 } // namespace eoos

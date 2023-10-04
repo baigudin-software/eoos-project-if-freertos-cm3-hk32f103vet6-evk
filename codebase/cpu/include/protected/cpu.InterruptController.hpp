@@ -56,6 +56,11 @@ public:
     virtual api::Guard& getGlobal();
     
     /**
+     * @copydoc eoos::api::CpuInterruptController::jump(int32_t)
+     */      
+    virtual void jump(int32_t exception);
+    
+    /**
      * @brief Allocates memory.
      *
      * @param size Number of bytes to allocate.

@@ -10,6 +10,7 @@
 
 #include "lib.Types.hpp"
 #include "sys.Freertos.hpp" ///< @note Has to be second to avoid NULL definition by FreeRTOS. 
+#include "sys.Definitions.hpp"
 
 #if EOOS_CPP_STANDARD >= 2011 && defined (EOOS_CPP_NOTHROW)
 #include <new>
@@ -19,10 +20,6 @@ namespace eoos
 {
 namespace sys
 {
-
-// POSIX used redefined types to comply MISRA-C++:2008
-typedef int             int_t;
-typedef unsigned int    uint_t;
 
 #if EOOS_CPP_STANDARD >= 2011 && defined (EOOS_CPP_NOTHROW)
 

@@ -5,28 +5,22 @@
  */ 
 #include "cpu.InterruptGlobal.hpp"
 
-extern "C"
+namespace eoos
 {
-
+namespace cpu
+{
+    
 /**
  * @brief Sets PRIMASK to 1 raises the execution priority to 0.
  *
  * @return Value of PRIMASK bit before the function called.
  */
-extern bool CpuInterruptGlobal_disable();
+extern "C" bool CpuInterruptGlobal_disableLow();
 
 /**
  * @brief Sets PRIMASK to 0 raises the execution priority to base level.
  */
-extern void CpuInterruptGlobal_enable();
-
-}
-
-
-namespace eoos
-{
-namespace cpu
-{
+extern "C" void CpuInterruptGlobal_enableLow();
 
 InterruptGlobal::InterruptGlobal()
     : NonCopyable<NoAllocator>()
@@ -46,12 +40,12 @@ bool_t InterruptGlobal::isConstructed() const
     
 bool_t InterruptGlobal::lock()
 {
-    return !::CpuInterruptGlobal_disable();
+    return !CpuInterruptGlobal_disableLow();
 }
 
 void InterruptGlobal::unlock()
 {
-    ::CpuInterruptGlobal_enable();
+    CpuInterruptGlobal_enableLow();
 }
 
 bool_t InterruptGlobal::construct()
