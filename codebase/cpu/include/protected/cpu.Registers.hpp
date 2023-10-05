@@ -25,7 +25,7 @@ namespace cpu
 struct Registers
 {
     /**
-     * Constructor.
+     * @brief Constructor.
      */    
     Registers();
 

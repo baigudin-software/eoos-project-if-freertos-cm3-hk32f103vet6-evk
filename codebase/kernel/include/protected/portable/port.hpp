@@ -18,11 +18,16 @@ class Kernel
 public:
 
     /**
-     * @brief Causes to execute FeeRTOS kernel.
+     * @brief Initializes FeeRTOS kernel.
      *
      * @param eoos EOOS system port.
      */
-    static void execute(api::SystemPort& port);
+    static void initialize(api::SystemPort& port);
+
+    /**
+     * @brief Causes to execute FeeRTOS kernel.
+     */
+    static void execute();
 
 };
 

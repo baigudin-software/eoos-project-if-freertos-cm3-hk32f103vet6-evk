@@ -25,7 +25,7 @@ public:
     
     /** 
      * @brief Destructor.
-     */                               
+     */
     virtual ~CpuTimerController() = 0;
     
     /**

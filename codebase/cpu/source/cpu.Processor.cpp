@@ -22,6 +22,7 @@ Processor::Processor()
     , api::CpuProcessor()
     , reg_()
     , gie_()
+    , abi_(reg_, gie_)
     , pll_(reg_, gie_)
     , int_(reg_, gie_) 
     , tim_(reg_, gie_) {
@@ -53,6 +54,11 @@ int32_t Processor::getCoreId() const
     return 0;
 }
 
+api::CpuRegistersController& Processor::getRegistersController()
+{
+    return abi_;
+}
+
 api::CpuPllController& Processor::getPllController()
 {
     return pll_;
@@ -77,11 +83,23 @@ bool_t Processor::construct()
         {
             break;
         }
+        if( !gie_.isConstructed() )
+        {
+            break;
+        }        
+        if( !abi_.isConstructed() )
+        {
+            break;
+        }
         if( !pll_.isConstructed() )
         {
             break;
         }        
         if( !int_.isConstructed() )
+        {
+            break;
+        }
+        if( !tim_.isConstructed() )
         {
             break;
         }

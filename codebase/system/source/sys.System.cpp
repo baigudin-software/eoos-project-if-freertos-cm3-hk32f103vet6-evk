@@ -167,10 +167,11 @@ int32_t System::execute(int32_t argc, char_t* argv[])
     int32_t error( ERROR_SYSTEM_ABORT );
     if( isConstructed() )
     {   
+        Kernel::initialize(*eoos_);        
         ThreadPrimary thread(scheduler_, argc, argv);
         if( thread.execute() )
         {
-            Kernel::execute(*eoos_);
+            Kernel::execute();
             thread.join();
         }
         error = thread.getError();

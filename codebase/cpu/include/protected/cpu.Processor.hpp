@@ -10,6 +10,7 @@
 #include "api.CpuProcessor.hpp"
 #include "cpu.Registers.hpp"
 #include "cpu.InterruptGlobal.hpp"
+#include "cpu.RegistersController.hpp"
 #include "cpu.PllController.hpp"
 #include "cpu.InterruptController.hpp"
 #include "cpu.TimerController.hpp"
@@ -60,7 +61,12 @@ public:
     virtual int32_t getCoreId() const;
     
     /**
-     * @copydoc eoos::api::CpuProcessor::getPllController()     
+     * @copydoc eoos::api::CpuProcessor::getRegistersController()
+     */
+    virtual api::CpuRegistersController& getRegistersController();
+    
+    /**
+     * @copydoc eoos::api::CpuProcessor::getPllController()
      */
     virtual api::CpuPllController& getPllController();
 
@@ -92,6 +98,11 @@ private:
      * @brief Target CPU global interrupt enable controller.
      */
     InterruptGlobal gie_;
+    
+    /**
+     * @brief Target CPU ABI registers controller.
+     */    
+    RegistersController abi_;
     
     /**
      * @brief Target CPU phase-locked loopt controller.

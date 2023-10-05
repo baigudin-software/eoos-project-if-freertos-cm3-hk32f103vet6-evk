@@ -328,6 +328,11 @@
               <FileType>8</FileType>
               <FilePath>..\..\codebase\cpu\source\cpu.Registers.cpp</FilePath>
             </File>
+            <File>
+              <FileName>cpu.RegistersController.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\cpu\source\cpu.RegistersController.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

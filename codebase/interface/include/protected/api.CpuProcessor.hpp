@@ -7,6 +7,7 @@
 #define API_CPUPROCESSOR_HPP_
 
 #include "api.Object.hpp"
+#include "api.CpuRegistersController.hpp"
 #include "api.CpuPllController.hpp"
 #include "api.CpuInterruptController.hpp"
 #include "api.CpuTimerController.hpp"
@@ -55,6 +56,13 @@ public:
      * @return CPU ID, or -1 if an error has been occurred.
      */
     virtual int32_t getCoreId() const = 0;
+
+    /**
+     * @brief Returns CPU ABI registers controller.
+     *
+     * @return ABI registers controller.
+     */
+    virtual CpuRegistersController& getRegistersController() = 0;
 
     /**
      * @brief Returns CPU HW phase-locked loop controller.
