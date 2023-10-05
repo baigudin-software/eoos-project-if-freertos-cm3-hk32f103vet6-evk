@@ -80,12 +80,6 @@ private:
      */
     bool_t construct(Type type);
 
-    /**
-     * @brief Output stream.
-     */
-//TODO    ::FILE* stream_;
-    void* stream_;
-
 };
 
 } // namespace sys

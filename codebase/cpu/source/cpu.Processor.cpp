@@ -22,7 +22,7 @@ Processor::Processor()
     , api::CpuProcessor()
     , reg_()
     , gie_()
-    , abi_(reg_, gie_)
+    , abi_()
     , pll_(reg_, gie_)
     , int_(reg_, gie_) 
     , tim_(reg_, gie_) {

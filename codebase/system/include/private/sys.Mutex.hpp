@@ -83,10 +83,14 @@ private:
     void deinitialize();
 
     /**
-     * @brief Mutex POSIX resource identifier.
+     * @brief Mutex FreeRTOS resource.
      */
-//TODO    ::pthread_mutex_t mutex_;
-    uint32_t mutex_;
+    ::SemaphoreHandle_t mutex_;
+
+    /**
+     * @brief Mutex FreeRTOS statatic buffer.
+     */    
+    ::StaticSemaphore_t buffer_;
     
 };
 
@@ -94,7 +98,8 @@ template <class A>
 Mutex<A>::Mutex()
     : NonCopyable<A>()
     , api::Mutex()
-    , mutex_() {
+    , mutex_()
+    , buffer_() {
     bool_t const isConstructed( construct() );
     setConstructed( isConstructed );
 }
@@ -114,13 +119,7 @@ bool_t Mutex<A>::isConstructed() const
 template <class A>
 bool_t Mutex<A>::tryLock()
 {
-    bool_t res( false );
-    if( isConstructed() )
-    {
-//TODO        int_t const error( ::pthread_mutex_trylock(&mutex_) );
-//TODO        res = (error == 0) ? true : false;
-    }
-    return res;
+    return false;
 }    
 
 template <class A>
@@ -129,8 +128,8 @@ bool_t Mutex<A>::lock()
     bool_t res( false );
     if( isConstructed() )
     {
-//TODO        int_t const error( ::pthread_mutex_lock(&mutex_) );
-//TODO        res = (error == 0) ? true : false;
+        ::BaseType_t const isTaken( ::xSemaphoreTakeRecursive(mutex_, portMAX_DELAY) );
+        res = (isTaken == pdPASS) ? true : false;
     }
     return res;
 }
@@ -140,11 +139,11 @@ void Mutex<A>::unlock()
 {
     if( isConstructed() )
     {
-//TODO        int_t const error( ::pthread_mutex_unlock(&mutex_) );
-//TODO        if (error != 0)
-//TODO        {   ///< UT Justified Branch: OS dependency
-//TODO            setConstructed(false);
-//TODO        }
+        ::BaseType_t const isGiven( ::xSemaphoreGiveRecursive(mutex_) );
+        if( isGiven != pdPASS )
+        {   ///< UT Justified Branch: OS dependency
+            setConstructed(false);
+        }
     }
 }
 
@@ -170,15 +169,18 @@ bool_t Mutex<A>::construct()
 template <class A>
 bool_t Mutex<A>::initialize()
 {
-//TODO    int_t const error( ::pthread_mutex_init(&mutex_, NULL) );
-//TODO    return error == 0;
-    return false;
+    
+    mutex_ = ::xSemaphoreCreateRecursiveMutexStatic( &buffer_ );
+    return mutex_ != NULL;
 }
 
 template <class A>
 void Mutex<A>::deinitialize()
 {
-//TODO    static_cast<void>( ::pthread_mutex_destroy(&mutex_) );
+    if( mutex_ != NULL )
+    {
+        ::vSemaphoreDelete( mutex_ );
+    }
 }
 
 } // namespace sys

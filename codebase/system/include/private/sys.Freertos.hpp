@@ -10,6 +10,7 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
+#include "semphr.h"
 #include "port.hpp"
 
 #endif // SYS_FREERTOS_HPP_

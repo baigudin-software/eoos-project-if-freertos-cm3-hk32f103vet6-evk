@@ -13,8 +13,7 @@ namespace sys
 
 OutStream::OutStream(Type type) 
     : NonCopyable<NoAllocator>()
-    , api::OutStream<char_t>()
-    , stream_( NULLPTR ) {
+    , api::OutStream<char_t>() {
     bool_t const isConstructed( construct(type) );
     setConstructed( isConstructed );
 }
@@ -32,7 +31,7 @@ api::OutStream<char_t>& OutStream::operator<<(char_t const* source)
 {
     if( isConstructed() )
     {
-//TODO        static_cast<void>( ::fputs(source, stream_) );
+        // @todo
     }
     return *this;
 }
@@ -47,7 +46,7 @@ api::OutStream<char_t>& OutStream::flush()
 {
     if( isConstructed() )
     {
-//TODO        static_cast<void>( ::fflush(stream_) );
+        // @todo
     }
     return *this;
 }
@@ -61,15 +60,8 @@ bool_t OutStream::construct(Type type)
         {   ///< UT Justified Branch: HW dependency
             break;
         }
-//TODO        if(type == TYPE_COUT)
-//TODO        {
-//TODO            stream_ = ::stdout;
-//TODO        }
-//TODO        else
-//TODO        {
-//TODO            stream_ = ::stderr;
-//TODO        }            
-//TODO        res = true;
+        // @todo
+        res = false;
         break;
     }
     return res;

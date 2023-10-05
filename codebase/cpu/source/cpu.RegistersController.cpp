@@ -11,11 +11,9 @@ namespace eoos
 namespace cpu
 {
     
-RegistersController::RegistersController(Registers& reg, api::Guard& gie)
+RegistersController::RegistersController()
     : NonCopyable<NoAllocator>()
-    , api::CpuRegistersController()
-    , reg_(reg)
-    , gie_(gie) {
+    , api::CpuRegistersController() {
     bool_t const isConstructed( construct() );
     setConstructed( isConstructed );
 }

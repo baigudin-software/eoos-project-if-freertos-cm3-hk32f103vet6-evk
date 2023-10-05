@@ -119,7 +119,7 @@ void* ResourceMemory<T,N>::allocate(size_t size, void* ptr)
     {
         return NULLPTR;
     }
-    for(int32_t i=0; i<N; i++)
+    for(int32_t i(0); i<N; i++)
     {
         if( isAllocated_[i] == true )
         {
@@ -141,7 +141,7 @@ template <typename T, int32_t N>
 void ResourceMemory<T,N>::free(void* ptr)
 {
     lib::Guard<NoAllocator> guard( guard_ );
-    for(int32_t i=0; i<N; i++)
+    for(int32_t i(0); i<N; i++)
     {
         if( memory_[i] == ptr )
         {
@@ -161,7 +161,7 @@ bool_t ResourceMemory<T,N>::construct()
         {   ///< UT Justified Branch: HW dependency
             break;
         }
-        for(int32_t i=0; i<N; i++)
+        for(int32_t i(0); i<N; i++)
         {
             isAllocated_[i] = false;
         }

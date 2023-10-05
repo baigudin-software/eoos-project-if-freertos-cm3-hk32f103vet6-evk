@@ -8,6 +8,7 @@
 #include "Program.hpp"
 #include "ContexSwitchTest.hpp"
 #include "ThreadYieldTest.hpp"
+#include "MutexTest.hpp"
 
 namespace eoos
 {
@@ -18,10 +19,13 @@ namespace eoos
 int32_t Program::start(int32_t argc, char_t* argv[])
 {
     // Comment to lock or uncomment to execute
-    testContexSwitch();
+    // testContexSwitch();
     
     // Comment to lock or uncomment to execute
     // testThreadYield();
+
+    // Comment to lock or uncomment to execute    
+    testMutex();
     
     // This is the Primary Task of FreeRTOS, and as soon as 
     // the RTOS does not support task exiting, do infinity loop.

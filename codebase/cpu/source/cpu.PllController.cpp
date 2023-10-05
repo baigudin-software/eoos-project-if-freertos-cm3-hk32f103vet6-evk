@@ -142,7 +142,7 @@ bool_t PllController::setSysClkTo72()
     bool_t res( false );
     bool_t isHserdy( false );
     reg_.rcc->cr.bit.hseon = 1; // Set HSE clock enable to HSE oscillator ON
-    for(int32_t i=0; i<REG_RCC_HSERDY_TIMEOUT; i++)
+    for(int32_t i(0); i<REG_RCC_HSERDY_TIMEOUT; i++)
     {
         if(reg_.rcc->cr.bit.hserdy == 1)
         {

@@ -78,25 +78,6 @@ private:
      * @brief Deinitializes kernel semaphore resource.
      */
     void deinitialize();
-
-    /**
-     * @brief Test if semaphore is fair.
-     *
-     * @return Fairness flag.
-     */
-    static bool_t isFair();
-
-    /**
-     * @brief Releases one permit.
-     *
-     * @return True on success.
-     */
-    bool_t post();
-
-    /**
-     * @brief Fairness flag.
-     */
-    bool_t isFair_;
     
     /**
      * @brief Number of permits available.
@@ -104,10 +85,14 @@ private:
     int32_t permits_;
 
     /**
-     * @brief Semaphore resource identifier.
+     * @brief Semaphore FreeRTOS resource.
      */
-//TODO    ::sem_t sem_;    
-    uint32_t sem_;
+    ::SemaphoreHandle_t sem_;
+
+    /**
+     * @brief Mutex FreeRTOS statatic buffer.
+     */    
+    ::StaticSemaphore_t buffer_;
 
 };
 
@@ -115,9 +100,9 @@ template <class A>
 Semaphore<A>::Semaphore(int32_t permits) 
     : NonCopyable<A>()
     , api::Semaphore()
-    , isFair_(false)
     , permits_(permits)
-    , sem_(){
+    , sem_()
+    , buffer_() {
     bool_t const isConstructed( construct() );
     setConstructed( isConstructed );
 }
@@ -140,26 +125,23 @@ bool_t Semaphore<A>::acquire()
     bool_t res( false );
     if( isConstructed() )
     {
-//TODO        int_t const error( ::sem_wait(&sem_) );
-//TODO        if(error == 0) 
-//TODO        { 
-//TODO            res = true; 
-//TODO        }
+        ::BaseType_t const isTaken( ::xSemaphoreTake(sem_, portMAX_DELAY) );
+        res = (isTaken == pdPASS) ? true : false;
     }
     return res;
 }
 
 template <class A>
 void Semaphore<A>::release()
-{
+{    
     if( isConstructed() )
     {
-        bool_t const isPosted( post() );
-        if ( !isPosted )
+        ::BaseType_t const isGiven( ::xSemaphoreGiveRecursive(sem_) );
+        if( isGiven != pdPASS )
         {   ///< UT Justified Branch: OS dependency
             setConstructed(false);
         }
-    }
+    }    
 }
 
 template <class A>
@@ -175,7 +157,6 @@ bool_t Semaphore<A>::construct()
         {
             break;
         }
-        isFair_ = isFair();
         res = true;
     } while(false);
     return res;
@@ -184,37 +165,17 @@ bool_t Semaphore<A>::construct()
 template <class A>
 bool_t Semaphore<A>::initialize()
 {
-//TODO    int_t const error( ::sem_init(&sem_, 0, static_cast<uint_t >(permits_)) );
-//TODO    return error == 0;
-    return false;
+    sem_ = ::xSemaphoreCreateCountingStatic(static_cast<::UBaseType_t>(permits_), 0, &buffer_);
+    return sem_ != NULL;
 }
 
 template <class A>
 void Semaphore<A>::deinitialize()
 {
-//TODO    static_cast<void>( ::sem_destroy(&sem_) );
-}
-
-
-template <class A>
-bool_t Semaphore<A>::isFair()
-{
-//TODO    int_t const priority( ::sched_getscheduler(0) );
-//TODO    return ( (priority == SCHED_FIFO) || (priority == SCHED_RR) ) ? true : false;  ///< SCA MISRA-C++:2008 Justified Rule 16-2-2
-    return false;
-}
-
-template <class A>
-bool_t Semaphore<A>::post()
-{
-//TODO    bool_t res( true );
-//TODO    int_t const error( ::sem_post(&sem_) );
-//TODO    if (error != 0)
-//TODO    {   ///< UT Justified Branch: OS dependency
-//TODO        res = false;
-//TODO    }
-//TODO    return res;
-    return false;
+    if( sem_ != NULL )
+    {
+        ::vSemaphoreDelete(sem_);
+    }
 }
         
 } // namespace sys

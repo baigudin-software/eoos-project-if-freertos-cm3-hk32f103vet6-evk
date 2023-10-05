@@ -44,7 +44,7 @@ class Task3 : public lib::AbstractTask<>
 {
     /**
      * @copydoc eoos::api::Task::start()
-     */        
+     */
     virtual void start()
     {
         lockOnContex3();

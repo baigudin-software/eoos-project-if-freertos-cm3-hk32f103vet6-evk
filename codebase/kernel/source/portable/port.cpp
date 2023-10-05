@@ -189,9 +189,9 @@ extern "C" StackType_t* pxPortInitialiseStack(StackType_t* pxTopOfStack, TaskFun
     void* stack( pxTopOfStack );
     if( pxPortEoos_ != NULLPTR )
     {
-        void* entry( reinterpret_cast<void*>(pxCode) );
-        void* exit( reinterpret_cast<void*>(prvTaskExitError) );
-        int32_t argument( reinterpret_cast<int32_t>(pvParameters) );
+        void* const entry( reinterpret_cast<void*>(pxCode) );
+        void* const exit( reinterpret_cast<void*>(prvTaskExitError) );
+        int32_t const argument( reinterpret_cast<int32_t>(pvParameters) );
         stack = pxPortEoos_->getProcessor().getRegistersController().initializeStack(stack, entry, exit, argument);
     }
     return reinterpret_cast<StackType_t*>(stack);

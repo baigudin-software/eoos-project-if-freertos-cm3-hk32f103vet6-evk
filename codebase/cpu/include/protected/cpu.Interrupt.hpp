@@ -336,7 +336,7 @@ void Interrupt<A>::disableIrq()
     int32_t const irq = exception_ - EXCEPTION_FIRST_IRQ;
     uint32_t bitValue( 0x00000001 );
     uint32_t const bitNumber( irq % 32 );    
-    for(uint32_t i=0; i<bitNumber; i++)
+    for(uint32_t i(0U); i<bitNumber; i++)
     {
         bitValue <<= 1;
     }
@@ -355,7 +355,7 @@ void Interrupt<A>::enableIrq()
     int32_t const irq = exception_ - EXCEPTION_FIRST_IRQ;
     uint32_t bitValue( 0x00000001 );
     uint32_t const bitNumber( irq % 32 );    
-    for(uint32_t i=0; i<bitNumber; i++)
+    for(uint32_t i(0U); i<bitNumber; i++)
     {
         bitValue <<= 1;
     }
@@ -419,7 +419,7 @@ template <class A>
 Interrupt<A>::Data::Data(Registers& areg, api::Guard& agie)
     : reg(areg)
     , gie(agie) {
-    for(int32_t i=0; i<EXCEPTION_LAST; i++)
+    for(int32_t i(0); i<EXCEPTION_LAST; i++)
     {
         handlers[i] = NULLPTR;
     }

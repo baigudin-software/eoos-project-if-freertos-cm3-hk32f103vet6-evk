@@ -28,11 +28,8 @@ public:
 
     /**
      * @brief Constructor.
-     *
-     * @param reg Target CPU register model.     
-     * @param gie Global interrupt enable controller.
      */
-    RegistersController(Registers& reg, api::Guard& gie);
+    RegistersController();
 
     /** 
      * @brief Destructor.
@@ -62,16 +59,6 @@ private:
      * @return true if object has been constructed successfully.
      */
     bool_t construct();
-
-    /**
-     * @brief Target CPU register model.
-     */        
-    Registers& reg_;
-    
-    /**
-     * @brief Global interrupt enable controller.
-     */
-    api::Guard& gie_;    
 
 };
     
