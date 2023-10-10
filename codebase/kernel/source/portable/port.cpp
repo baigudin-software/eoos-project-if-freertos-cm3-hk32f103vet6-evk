@@ -77,8 +77,9 @@ extern "C" void vPortYield(void)
 {
     if( pxPortEoos_ != NULLPTR )
     {
-        int32_t source( pxPortEoos_->getTimer().getInterrupSource() );
-        pxPortEoos_->getProcessor().getInterruptController().jump(source);
+        api::CpuInterruptController& ic( pxPortEoos_->getProcessor().getInterruptController() );
+        int32_t const source( ic.getNumberSupervisor() );
+        ic.jump(source);
     }
 }
 

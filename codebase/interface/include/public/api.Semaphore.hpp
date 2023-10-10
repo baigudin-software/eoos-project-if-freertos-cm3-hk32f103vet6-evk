@@ -41,8 +41,10 @@ public:
      * @brief Releases one permit.
      *
      * The function releases from one permit and returns this to the semaphore.
+     *
+     * @return True if the semaphore is released successfully.
      */
-    virtual void release() = 0;
+    virtual bool_t release() = 0;
 
 };
         

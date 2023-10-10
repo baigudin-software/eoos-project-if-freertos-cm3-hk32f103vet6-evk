@@ -65,6 +65,11 @@ api::CpuTimer* TimerController::createResourceTimerSystem()
     return ptr;
 }
 
+int32_t TimerController::getNumberSystick() const
+{
+    return TimerSystem<TimerController>::INDEX_SYSTICK;
+}
+
 bool_t TimerController::construct()
 {
     bool_t res( false );

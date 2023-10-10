@@ -6,8 +6,7 @@
  * @brief Tests of contex switch.
  */
 #include "ContexSwitchTest.hpp"
-#include "lib.Thread.hpp"
-#include "lib.AbstractTask.hpp"
+#include "lib.AbstractThreadTask.hpp"
 
 namespace eoos
 {
@@ -37,10 +36,10 @@ namespace
 {
     
 /**
- * @class Task3
- * @brief Test task with value 3 of registers.
+ * @class Thread3
+ * @brief Test thread with value 3 of registers.
  */
-class Task3 : public lib::AbstractTask<>
+class Thread3 : public lib::AbstractThreadTask<>
 {
     /**
      * @copydoc eoos::api::Task::start()
@@ -52,18 +51,17 @@ class Task3 : public lib::AbstractTask<>
 };
 
 /**
- * @class Task2
- * @brief Test task with value 2 of registers.
+ * @class Thread2
+ * @brief Test thread with value 2 of registers.
  */
-class Task2 : public lib::AbstractTask<>
+class Thread2 : public lib::AbstractThreadTask<>
 {
     /**
      * @copydoc eoos::api::Task::start()
      */        
     virtual void start()
     {
-        Task3 task3;
-        lib::Thread<> thread3(task3);
+        Thread3 thread3;
         thread3.execute();
         lockOnContex2();
     }
@@ -73,8 +71,7 @@ class Task2 : public lib::AbstractTask<>
 
 void testContexSwitch()
 {
-    Task2 task2;
-    lib::Thread<> thread2(task2);
+    Thread2 thread2;
     thread2.execute();    
     lockOnContex1();
 }

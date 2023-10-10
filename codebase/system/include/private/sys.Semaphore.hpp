@@ -52,7 +52,7 @@ public:
     /**
      * @copydoc eoos::api::Semaphore::release()
      */
-    virtual void release();
+    virtual bool_t release();
 
 protected:
 
@@ -78,6 +78,11 @@ private:
      * @brief Deinitializes kernel semaphore resource.
      */
     void deinitialize();
+
+    /**
+     * @brief Max number of permits including the value.
+     */    
+    static const int32_t MAX_PERMITS = 0x1A;
     
     /**
      * @brief Number of permits available.
@@ -132,16 +137,15 @@ bool_t Semaphore<A>::acquire()
 }
 
 template <class A>
-void Semaphore<A>::release()
-{    
+bool_t Semaphore<A>::release()
+{
+    bool_t res( false );    
     if( isConstructed() )
     {
-        ::BaseType_t const isGiven( ::xSemaphoreGiveRecursive(sem_) );
-        if( isGiven != pdPASS )
-        {   ///< UT Justified Branch: OS dependency
-            setConstructed(false);
-        }
-    }    
+        ::BaseType_t const isGiven( ::xSemaphoreGive(sem_) );
+        res = (isGiven == pdPASS) ? true : false;
+    }
+    return res;    
 }
 
 template <class A>
@@ -151,6 +155,10 @@ bool_t Semaphore<A>::construct()
     do {
         if( !isConstructed() )
         {   ///< UT Justified Branch: HW dependency
+            break;
+        }
+        if( permits_ > MAX_PERMITS )
+        {
             break;
         }
         if( !initialize() )
@@ -165,7 +173,9 @@ bool_t Semaphore<A>::construct()
 template <class A>
 bool_t Semaphore<A>::initialize()
 {
-    sem_ = ::xSemaphoreCreateCountingStatic(static_cast<::UBaseType_t>(permits_), 0, &buffer_);
+    ::UBaseType_t const uxMaxCount( static_cast<::UBaseType_t>(MAX_PERMITS) );
+    ::UBaseType_t const uxInitialCount( static_cast<::UBaseType_t>(permits_) );
+    sem_ = ::xSemaphoreCreateCountingStatic(uxMaxCount, uxInitialCount, &buffer_);
     return sem_ != NULL;
 }
 

@@ -28,13 +28,6 @@ public:
     virtual ~CpuTimer() = 0;
         
     /**
-     * @brief Returns an available interrupt source for this timer.
-     *
-     * @return Available interrupt source, or -1 if error has been occurred.
-     */  
-    virtual int32_t getInterrupSource() const = 0;
-
-    /**
      * @brief Sets this timer period.
      *
      * @param us - timer period in microseconds, zero value sets a period to maximum value.

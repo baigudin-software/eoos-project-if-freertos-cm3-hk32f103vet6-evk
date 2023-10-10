@@ -1,13 +1,12 @@
 /**
- * @file      ThreadYieldTest.cpp
+ * @file      MutexTest.cpp
  * @author    Sergey Baigudin, sergey@baigudin.software
  * @copyright 2023, Sergey Baigudin, Baigudin Software
  *
  * @brief Tests of thread yield.
  */
-#include "ThreadYieldTest.hpp"
-#include "lib.Thread.hpp"
-#include "lib.AbstractTask.hpp"
+#include "MutexTest.hpp"
+#include "lib.AbstractThreadTask.hpp"
 #include "lib.Mutex.hpp"
 #include "lib.Guard.hpp"
 
@@ -22,9 +21,9 @@ volatile int64_t resource_(0);
     
 /**
  * @class CountUp
- * @brief Count up task.
+ * @brief Count up thread`.
  */
-class CountUp : public lib::AbstractTask<>
+class CountUp : public lib::AbstractThreadTask<>
 {
 
 public:
@@ -35,7 +34,7 @@ public:
      * @param mutex Mutex resource to lock on.
      */    
     CountUp(api::Mutex& mutex)
-        : lib::AbstractTask<>()
+        : lib::AbstractThreadTask<>()
         , isCompleted_( false )
         , mutex_(mutex) {
     }
@@ -86,7 +85,7 @@ private:
  * @class CountDw
  * @brief Count down task.
  */
-class CountDw : public lib::AbstractTask<>
+class CountDw : public lib::AbstractThreadTask<>
 {
 
 public:
@@ -97,7 +96,7 @@ public:
      * @param mutex Mutex resource to lock on.
      */
     CountDw(api::Mutex& mutex)
-        : lib::AbstractTask<>()
+        : lib::AbstractThreadTask<>()
         , isCompleted_( false )
         , mutex_(mutex) {
     }
@@ -149,32 +148,26 @@ private:
 void testMutex()
 {
     lib::Mutex<> mutex;
-    CountUp taskUp(mutex);
-    CountDw taskDw(mutex);
-    lib::Thread<> threadUp(taskUp);   
-    lib::Thread<> threadDw(taskDw);
-    threadUp.execute();
-    threadDw.execute();
+    CountUp countUp(mutex);
+    CountDw countDw(mutex);
+    countUp.execute();
+    countDw.execute();
     while(true)
     {
         bool_t isCompleted = true;
-        isCompleted &= taskUp.isCompleted();
-        isCompleted &= taskDw.isCompleted();
+        isCompleted &= countUp.isCompleted();
+        isCompleted &= countDw.isCompleted();
         if(isCompleted)
         {
             break;
         }
     }
-    if(resource_ == 0)
-    {
-        // Success
+    if(resource_ != 0)
+    {   // Failure
         while(true){}
     }
-    else
-    {
-        // Failure
-        while(true){}
-    }
+    // Success
+    while(true){}    
 }
 
 } // namespace eoos

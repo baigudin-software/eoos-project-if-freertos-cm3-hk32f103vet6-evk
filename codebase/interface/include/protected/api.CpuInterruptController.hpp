@@ -52,6 +52,20 @@ public:
      * @param source Interrupt source number.
      */      
     virtual void jump(int32_t source) = 0;
+    
+    /**
+     * @brief Gets a System Tick (SysTick) source for RTOS usage.
+     *
+     * @return SysTick source.
+     */      
+    virtual int32_t getNumberSystick() const = 0;    
+
+    /**
+     * @brief Gets a Supervisor Call (SVCall) source for RTOS usage.
+     *
+     * @return SVCall source.
+     */      
+    virtual int32_t getNumberSupervisor() const = 0;
 
 };
 

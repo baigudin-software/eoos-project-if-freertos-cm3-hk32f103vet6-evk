@@ -49,6 +49,11 @@ public:
      * @copydoc eoos::api::CpuTimerController::createResource()
      */      
     virtual api::CpuTimer* createResource(int32_t index);
+    
+    /**
+     * @copydoc eoos::api::CpuTimerController::getNumberSystick()
+     */
+    virtual int32_t getNumberSystick() const;    
 
     /**
      * @brief Allocates memory.

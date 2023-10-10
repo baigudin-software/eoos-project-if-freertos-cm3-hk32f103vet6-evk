@@ -1,32 +1,26 @@
 /**
- * @file      sys.SchedulerRoutine.cpp
+ * @file      sys.SchedulerRoutineTimer.cpp
  * @author    Sergey Baigudin, sergey@baigudin.software
  * @copyright 2017-2023, Sergey Baigudin, Baigudin Software
  */
-#include "sys.SchedulerRoutine.hpp"
+#include "sys.SchedulerRoutineTimer.hpp"
 
 namespace eoos
 {
 namespace sys
 {
 
-SchedulerRoutine::SchedulerRoutine()
-    : NonCopyable<NoAllocator>()
-    , api::Task() {
+SchedulerRoutineTimer::SchedulerRoutineTimer()
+    : SchedulerRoutineBase() {
     bool_t const isConstructed( construct() );
     setConstructed( isConstructed );    
 }
 
-SchedulerRoutine::~SchedulerRoutine()
+SchedulerRoutineTimer::~SchedulerRoutineTimer()
 {
 }
 
-bool_t SchedulerRoutine::isConstructed() const
-{
-    return Parent::isConstructed();
-}
-
-void SchedulerRoutine::start()
+void SchedulerRoutineTimer::start()
 {
     // Called by the portable layer each time a tick interrupt occurs.
     // Increments the tick then checks to see if the new tick 
@@ -39,12 +33,7 @@ void SchedulerRoutine::start()
     }    
 }
 
-size_t SchedulerRoutine::getStackSize() const
-{
-    return 0;
-}
-
-bool_t SchedulerRoutine::construct()
+bool_t SchedulerRoutineTimer::construct()
 {
     bool_t res( false );
     do 

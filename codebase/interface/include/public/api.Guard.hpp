@@ -36,8 +36,10 @@ public:
 
     /**
      * @brief Unlocks this guard.
+     *
+     * @return True if this guard is unlocked successfully, or false if an error occurred.     
      */
-    virtual void unlock() = 0;
+    virtual bool_t unlock() = 0;
 
 };
 

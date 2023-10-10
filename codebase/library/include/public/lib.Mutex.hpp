@@ -87,12 +87,14 @@ public:
     /**
      * @copydoc eoos::api::Mutex::unlock()
      */
-    virtual void unlock()
+    virtual bool_t unlock()
     {
+        bool_t res( false );
         if( isConstructed() )
         {
-            mutex_->unlock();
+            res = mutex_->unlock();
         }
+        return res;
     }
 
 protected:

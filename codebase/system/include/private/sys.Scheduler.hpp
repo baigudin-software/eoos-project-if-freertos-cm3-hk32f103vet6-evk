@@ -10,7 +10,8 @@
 #include "api.Scheduler.hpp"
 #include "api.CpuProcessor.hpp"
 #include "sys.Thread.hpp"
-#include "sys.SchedulerRoutine.hpp"
+#include "sys.SchedulerRoutineTimer.hpp"
+#include "sys.SchedulerRoutineSvcall.hpp"
 #include "sys.Mutex.hpp"
 #include "lib.ResourceMemory.hpp"
 
@@ -61,20 +62,6 @@ public:
      */
     virtual void yield();
     
-    /**
-     * @brief Returns timer interrupt resource.
-     *
-     * @return Timer interrupt resource address.
-     */
-    api::CpuInterrupt* getTimerInterrupt();
-
-    /**
-     * @brief Returns timer resource.
-     *
-     * @return Timer resource address.
-     */
-    api::CpuTimer* getTimer();
-
     /**
      * @brief Allocates memory.
      *
@@ -143,9 +130,14 @@ private:
     static api::Heap* heap_;
     
     /**
-     * @brief Interrupt service routine.
+     * @brief Timer interrupt service routine.
      */
-    SchedulerRoutine isr_;
+    SchedulerRoutineTimer isrTim_;
+
+    /**
+     * @brief SVC interrupt service routine.
+     */
+    SchedulerRoutineSvcall isrSvc_;
     
     /**
      * @brief Target CPU interface.
@@ -160,7 +152,12 @@ private:
     /**
      * @brief Target CPU interrupt resource.
      */    
-    api::CpuInterrupt* int_;
+    api::CpuInterrupt* intTim_;
+    
+    /**
+     * @brief Target CPU interrupt resource.
+     */    
+    api::CpuInterrupt* intSvc_;
     
     /**
      * @brief Mutex resource.

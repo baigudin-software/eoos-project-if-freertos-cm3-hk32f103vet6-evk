@@ -434,14 +434,24 @@
               <FilePath>..\..\codebase\system\source\sys.System.cpp</FilePath>
             </File>
             <File>
-              <FileName>sys.SchedulerRoutine.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\codebase\system\source\sys.SchedulerRoutine.cpp</FilePath>
-            </File>
-            <File>
               <FileName>sys.ThreadPrimary.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\codebase\system\source\sys.ThreadPrimary.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>sys.SchedulerRoutineBase.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\system\source\sys.SchedulerRoutineBase.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>sys.SchedulerRoutineSvcall.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\system\source\sys.SchedulerRoutineSvcall.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>sys.SchedulerRoutineTimer.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\system\source\sys.SchedulerRoutineTimer.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -472,6 +482,11 @@
               <FileName>MutexTest.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\codebase\tests\source\MutexTest.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>SemaphoreTest.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\tests\source\SemaphoreTest.cpp</FilePath>
             </File>
           </Files>
         </Group>

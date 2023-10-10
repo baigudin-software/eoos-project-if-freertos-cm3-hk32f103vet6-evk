@@ -49,19 +49,21 @@ public:
      * is to pass an object of the class to a lib::Guard object which follows
      * this agreement under hood.
      *
-     * @return Global interrupts enable bit value before the function was called.
+     * @return True if Global interrupts enable bit was 1 before the call.
      */
     virtual bool_t lock();
 
     /**
      * @brief Enables all maskable interrupts.
+     *
+     * @return True if Global interrupts enable bit changed from 0 to 1 on the call.
      */
-    virtual void unlock();
+    virtual bool_t unlock();
 
 private:
 
     /**
-     * Constructs this object.
+     * @brief Constructs this object.
      *
      * @return true if object has been constructed successfully.
      */

@@ -18,7 +18,16 @@ namespace cpu
  * @note The function relies the exception argument is valid, as
  *       it has ASM implementation and difficulty to check the argument.
  */
-extern "C" void CpuInterruptController_jumpLow(int32_t exception);
+extern "C" void CpuInterruptController_jumpUsrLow(int32_t exception);
+
+/**
+ * @brief Jumps to the SVCall exception handler.
+ *
+ * @param exception Exception number.
+ * @note The function relies the exception argument is valid, as
+ *       it has ASM implementation and difficulty to check the argument.
+ */
+extern "C" void CpuInterruptController_jumpSvcLow(int32_t exception);
 
 /**
  * @brief Handles exceptions.
@@ -85,7 +94,24 @@ void InterruptController::jump(int32_t exception)
     {
         return;
     }
-    CpuInterruptController_jumpLow(exception);
+    if( exception == getNumberSupervisor() )
+    {
+        CpuInterruptController_jumpSvcLow(exception);
+    }
+    else
+    {
+        CpuInterruptController_jumpUsrLow(exception);
+    }
+}
+
+int32_t InterruptController::getNumberSystick() const
+{
+    return Interrupt<InterruptController>::EXCEPTION_SYSTICK;
+}
+
+int32_t InterruptController::getNumberSupervisor() const
+{
+    return Interrupt<InterruptController>::EXCEPTION_SVCALL;
 }
 
 bool_t InterruptController::construct()

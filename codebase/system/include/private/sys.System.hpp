@@ -81,17 +81,7 @@ public:
      * @copydoc eoos::api::SystemPort::getProcessor()
      */
     virtual api::CpuProcessor& getProcessor();
-    
-    /**
-     * @copydoc eoos::api::SystemPort::getTimerInterrupt()
-     */
-    virtual api::CpuInterrupt& getTimerInterrupt();
-    
-    /**
-     * @copydoc eoos::api::SystemPort::getTimerInterrupt()
-     */
-    virtual api::CpuTimer& getTimer();
-    
+        
     /**
      * @brief Runs the EOOS system.
      *

@@ -55,7 +55,7 @@ public:
     /**
      * @copydoc eoos::api::Mutex::unlock()
      */
-    virtual void unlock();
+    virtual bool_t unlock();
 
 protected:
 
@@ -135,16 +135,15 @@ bool_t Mutex<A>::lock()
 }
 
 template <class A>
-void Mutex<A>::unlock()
+bool_t Mutex<A>::unlock()
 {
+    bool_t res( false );
     if( isConstructed() )
     {
         ::BaseType_t const isGiven( ::xSemaphoreGiveRecursive(mutex_) );
-        if( isGiven != pdPASS )
-        {   ///< UT Justified Branch: OS dependency
-            setConstructed(false);
-        }
+        res = (isGiven == pdPASS) ? true : false;
     }
+    return res;    
 }
 
 template <class A>

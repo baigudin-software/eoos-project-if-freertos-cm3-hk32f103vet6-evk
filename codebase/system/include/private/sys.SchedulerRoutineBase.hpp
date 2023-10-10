@@ -1,10 +1,10 @@
 /**
- * @file      sys.SchedulerRoutine.hpp
+ * @file      sys.SchedulerRoutineBase.hpp
  * @author    Sergey Baigudin, sergey@baigudin.software
  * @copyright 2017-2023, Sergey Baigudin, Baigudin Software
  */
-#ifndef SYS_SCHEDULERROUTINE_HPP_
-#define SYS_SCHEDULERROUTINE_HPP_
+#ifndef SYS_SCHEDULERROUTINEBASE_HPP_
+#define SYS_SCHEDULERROUTINEBASE_HPP_
 
 #include "sys.NonCopyable.hpp"
 #include "api.Task.hpp"
@@ -15,10 +15,10 @@ namespace sys
 {
 
 /**
- * @class SchedulerRoutine
+ * @class SchedulerRoutineBase
  * @brief Scheduler interrupt service routine.
  */
-class SchedulerRoutine : public NonCopyable<NoAllocator>, public api::Task
+class SchedulerRoutineBase : public NonCopyable<NoAllocator>, public api::Task
 {
     typedef NonCopyable<NoAllocator> Parent;
 
@@ -27,22 +27,17 @@ public:
     /**
      * @brief Constructor.
      */
-    SchedulerRoutine();
+    SchedulerRoutineBase();
 
     /**
      * @brief Destructor.
      */
-    virtual ~SchedulerRoutine();
+    virtual ~SchedulerRoutineBase();
 
     /**
      * @copydoc eoos::api::Object::isConstructed()
      */
     virtual bool_t isConstructed() const;
-
-    /**
-     * @copydoc eoos::api::Task::start()
-     */
-    virtual void start();
 
     /**
      * @copydoc eoos::api::Task::getStackSize()
@@ -66,4 +61,4 @@ private:
 
 } // namespace sys
 } // namespace eoos
-#endif // SYS_SCHEDULERROUTINE_HPP_
+#endif // SYS_SCHEDULERROUTINEBASE_HPP_

@@ -84,11 +84,6 @@ public:
     virtual bool_t isConstructed() const;    
     
     /**
-     * @copydoc eoos::api::CpuTimer::getInterrupSource()
-     */  
-    virtual int32_t getInterrupSource() const;
-    
-    /**
      * @copydoc eoos::api::CpuTimer::setPeriod()
      */      
     virtual bool_t setPeriod(int64_t us);
@@ -127,16 +122,7 @@ private:
      * @brief Initializes the hardware.
      */
     void deinitialize();
-    
-    /**
-     * @enum Source
-     * @brief Timer interrupt sources.
-     */
-    enum Source
-    {     
-        SOURCE_SYSTICK = 15
-    };
-    
+        
     /**
      * @brief Global data for all these objects;
      */
@@ -163,12 +149,6 @@ template <class A>
 bool_t TimerSystem<A>::isConstructed() const
 {
     return Parent::isConstructed();
-}
-
-template <class A>
-int32_t TimerSystem<A>::getInterrupSource() const
-{
-    return SOURCE_SYSTICK;
 }
 
 template <class A>

@@ -15,12 +15,14 @@ namespace cpu
  *
  * @return Value of PRIMASK bit before the function called.
  */
-extern "C" bool CpuInterruptGlobal_disableLow();
+extern "C" bool_t CpuInterruptGlobal_disableLow();
 
 /**
- * @brief Sets PRIMASK to 0 raises the execution priority to base level.
+ * @brief Sets PRIMASK to 0 raises the execution priority to base level.\
+ *
+ * @return Value of PRIMASK bit before the function called.    
  */
-extern "C" void CpuInterruptGlobal_enableLow();
+extern "C" bool_t CpuInterruptGlobal_enableLow();
 
 InterruptGlobal::InterruptGlobal()
     : NonCopyable<NoAllocator>()
@@ -43,9 +45,9 @@ bool_t InterruptGlobal::lock()
     return !CpuInterruptGlobal_disableLow();
 }
 
-void InterruptGlobal::unlock()
+bool_t InterruptGlobal::unlock()
 {
-    CpuInterruptGlobal_enableLow();
+    return CpuInterruptGlobal_enableLow();
 }
 
 bool_t InterruptGlobal::construct()

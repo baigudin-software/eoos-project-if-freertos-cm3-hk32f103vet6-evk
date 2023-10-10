@@ -49,7 +49,7 @@ public:
     {
         if( isLocked_ )
         {
-            guard_.unlock();
+            isLocked_ = !guard_.unlock();
         }
     }
     

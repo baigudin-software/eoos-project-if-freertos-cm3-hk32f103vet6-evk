@@ -12,7 +12,8 @@
                 .thumb
                     
                 .global m_handle_reset
-                .global CpuInterruptController_jumpLow                
+                .global CpuInterruptController_jumpUsrLow
+                .global CpuInterruptController_jumpSvcLow
                 .global CpuInterruptGlobal_disableLow
                 .global CpuInterruptGlobal_enableLow
                 
@@ -120,7 +121,6 @@ HANDLE_EXCEPTION m_handle_hardfault        3
 HANDLE_EXCEPTION m_handle_memmanage        4
 HANDLE_EXCEPTION m_handle_busfault         5   
 HANDLE_EXCEPTION m_handle_usagefault       6
-HANDLE_EXCEPTION m_handle_svcall_common    11
 HANDLE_EXCEPTION m_handle_debugmon         12              
 HANDLE_EXCEPTION m_handle_pendsv           14
 HANDLE_EXCEPTION m_handle_wwdg             16
@@ -206,8 +206,6 @@ m_handle_reset:
 
 /**
  * @brief SVC call routine.
- *
- * @param R0 Exception number to jump on SVC #0xFF. 
  */
                 .thumb_func
 m_handle_svcall:
@@ -215,26 +213,47 @@ m_handle_svcall:
                 mrs     r12, PSP
                 ldr     r12, [r12, #24]
                 ldrb    r12, [r12, #-2]
-                /* Check if SVC command is 0xFF */
+                /* Check if jump on the SCVCall handler */
                 cmp     r12, #0xFF
                 beq     m_handle_svcall_ff
-                /* Do common handler if no special command given */                
-                b       m_handle_svcall_common
+                /* Check if jump on an ISR handler */
+                cmp     r12, #0xFE
+                beq     m_handle_svcall_fe
+                /* Do return if no special command given */                
+                bx      lr
 
 /**
- * @brief SVC 0xFF call routine.
+ * @brief SVC call to jump on an ISR.
  *
- * @param R0 Exception number to jump on SVC #0xFF. 
+ * @param R0 Exception number to jump on it. 
  */
                 .thumb_func 
-m_handle_svcall_ff:
+m_handle_svcall_fe:
                 ldr     r1, =m_vectors
                 lsl     r0, r0, #2
                 add     r1, r1, r0
                 ldr     pc, [r1]
 
 /**
+ * @brief SVC call to route user scvcall handler.
+ *
+ * @param R0 SVC exception number (unused). 
+ */
+                .thumb_func 
+m_handle_svcall_ff:
+                mov     r12, #11
+                b       m_handle_scheduler
+
+/**
  * @brief System timer routine.
+ */
+                .thumb_func
+m_handle_systick:
+                mov     r12, #15
+                b       m_handle_scheduler
+
+/**
+ * @brief System scheduler routine.
  * @see ARMv7-M Architecture Reference Manual, B1.5.6
  *
  * The routine extends ARMv7-M exception entry behavior by pushing registers on stack.
@@ -260,9 +279,11 @@ m_handle_svcall_ff:
  *
  * Note that Thread mode uses SP_process and Handler mode uses SP_main, thus
  * the task R13(SP) on enerence saves in PSP, and the routine use MSP.
+ *
+ * @param R12 Scheduler exeption number
  */
                 .thumb_func
-m_handle_systick:
+m_handle_scheduler:
                 /* Save the remained registers on the Process stack of interrupted thread */
                 mrs     r0, psp
                 isb
@@ -272,7 +293,7 @@ m_handle_systick:
                 ldr	    r1, [r7]
                 str     r0, [r1]                
                 /* Call the exception high level routine */
-                mov     r0, #15
+                mov     r0, r12
                 mov     r8, lr
                 bl      CpuInterruptController_handleException
                 mov     lr, r8
@@ -287,16 +308,27 @@ m_handle_systick:
 pxCurrentTCBConst: .word pxCurrentTCB
 
 /**
- * @fn void CpuInterruptController_jumpLow();
+ * @fn void CpuInterruptController_jumpUsrLow();
  * @brief Jumps to the exception handler.
  *
  * @param R0 Exception number.
  */
                 .thumb_func
-CpuInterruptController_jumpLow:
+CpuInterruptController_jumpUsrLow:
+                svc     #0xFE
+                bx      lr
+
+/**
+ * @fn void CpuInterruptController_jumpSvcLow();
+ * @brief Jumps to the exception handler.
+ *
+ * @param R0 SVCall exception number.
+ */
+                .thumb_func
+CpuInterruptController_jumpSvcLow:
                 svc     #0xFF
                 bx      lr
-    
+
 /**
  * @fn bool CpuInterruptGlobal_disable();
  * @brief Sets PRIMASK to 1 raises the execution priority to 0.
@@ -310,10 +342,13 @@ CpuInterruptGlobal_disableLow:
                 bx      lr
 
 /**
- * @fn void CpuInterruptGlobal_enable();
+ * @fn bool CpuInterruptGlobal_enable();
  * @brief Sets PRIMASK to 0 raises the execution priority to base level.
+ *
+ * @return Value of PRIMASK bit before the function called. 
  */
                 .thumb_func
 CpuInterruptGlobal_enableLow:
+                mrs     r0, PRIMASK
                 cpsie   i
                 bx      lr

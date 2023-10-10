@@ -76,12 +76,14 @@ public:
     /**
      * @copydoc eoos::api::Semaphore::release()
      */
-    virtual void release()
+    virtual bool_t release()
     {
+        bool_t res( false );        
         if( isConstructed() )
         {
-            semaphore_->release();
+            res = semaphore_->release();
         }
+        return res;
     }
 
 protected:

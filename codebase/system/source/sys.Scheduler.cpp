@@ -16,12 +16,14 @@ api::Heap* Scheduler::heap_( NULLPTR );
 Scheduler::Scheduler(api::CpuProcessor& cpu)
     : NonCopyable<NoAllocator>()
     , api::Scheduler()
-    , isr_()
-    , cpu_(cpu)
-    , tim_(NULLPTR)
-    , int_(NULLPTR)
+    , isrTim_()
+    , isrSvc_()
+    , cpu_( cpu )
+    , tim_( NULLPTR )
+    , intTim_( NULLPTR )
+    , intSvc_( NULLPTR )
     , mutex_()
-    , memory_(mutex_) {
+    , memory_( mutex_ ) {
     bool_t const isConstructed( construct() );
     setConstructed( isConstructed );    
 }
@@ -78,26 +80,6 @@ void Scheduler::yield()
     }
 }
 
-api::CpuInterrupt* Scheduler::getTimerInterrupt()
-{
-    api::CpuInterrupt* res( NULLPTR );
-    if( isConstructed() )
-    {
-        res = int_;
-    }
-    return res;
-}
-
-api::CpuTimer* Scheduler::getTimer()
-{
-    api::CpuTimer* res( NULLPTR );
-    if( isConstructed() )
-    {
-        res = tim_;
-    }
-    return res;
-}
-
 bool_t Scheduler::construct()
 {
     bool_t res( false );
@@ -107,7 +89,11 @@ bool_t Scheduler::construct()
         {
             break;
         }
-        if( !isr_.isConstructed() )
+        if( !isrTim_.isConstructed() )
+        {
+            break;
+        }        
+        if( !isrSvc_.isConstructed() )
         {
             break;
         }        
@@ -187,14 +173,18 @@ bool_t Scheduler::initialize(api::Heap* heap)
             break;
         }
         heap_ = heap;
-        tim_ = cpu_.getTimerController().createResource(0);
+        // Create System Timer
+        int32_t number( 0 );
+        number = cpu_.getTimerController().getNumberSystick();
+        tim_ = cpu_.getTimerController().createResource(number);
         if( tim_ == NULLPTR || !tim_->isConstructed() )
         {
             break;
         }
-        int32_t const source ( tim_->getInterrupSource() );
-        int_ = cpu_.getInterruptController().createResource(isr_, source);
-        if( int_ == NULLPTR || !int_->isConstructed() )
+        // Create System Timer interrupt
+        number = cpu_.getInterruptController().getNumberSystick();
+        intTim_ = cpu_.getInterruptController().createResource(isrTim_, number);
+        if( intTim_ == NULLPTR || !intTim_->isConstructed() )
         {
             break;
         }
@@ -202,7 +192,16 @@ bool_t Scheduler::initialize(api::Heap* heap)
         {
             break;
         }
-        int_->enable();        
+        // Create SVCall interrupt
+        number = cpu_.getInterruptController().getNumberSupervisor();
+        intSvc_ = cpu_.getInterruptController().createResource(isrSvc_, number);
+        if( intSvc_ == NULLPTR || !intSvc_->isConstructed() )
+        {
+            break;
+        }
+        // Start resources
+        intSvc_->enable();
+        intTim_->enable();        
         tim_->start();
         res = true;
     } while(false);
@@ -211,15 +210,22 @@ bool_t Scheduler::initialize(api::Heap* heap)
 
 void Scheduler::deinitialize()
 {
-    heap_ = NULLPTR;
+    tim_->stop();
+    intTim_->disable();        
+    intSvc_->disable();
+    if(intSvc_ != NULLPTR)
+    {
+        delete intSvc_;
+    }
+    if(intTim_ != NULLPTR)
+    {
+        delete intTim_;
+    }
     if(tim_ != NULLPTR)
     {
         delete tim_;
     }
-    if(int_ != NULLPTR)
-    {
-        delete int_;
-    }    
+    heap_ = NULLPTR;
 }
 
 } // namespace sys

@@ -134,34 +134,6 @@ api::CpuProcessor& System::getProcessor()
     return cpu_;
 }
 
-api::CpuInterrupt& System::getTimerInterrupt()
-{
-    if( !isConstructed() )
-    {   ///< UT Justified Branch: HW dependency
-        exit(ERROR_SYSCALL_CALLED);
-    }
-    api::CpuInterrupt* const intTim( scheduler_.getTimerInterrupt() );
-    if( intTim == NULLPTR )
-    {
-        exit(ERROR_SYSCALL_CALLED);
-    }
-    return *intTim;
-}
-
-api::CpuTimer& System::getTimer()
-{
-    if( !isConstructed() )
-    {   ///< UT Justified Branch: HW dependency
-        exit(ERROR_SYSCALL_CALLED);
-    }
-    api::CpuTimer* const tim( scheduler_.getTimer() );
-    if( tim == NULLPTR )
-    {
-        exit(ERROR_SYSCALL_CALLED);
-    }
-    return *tim;    
-}
-
 int32_t System::execute(int32_t argc, char_t* argv[])
 {
     int32_t error( ERROR_SYSTEM_ABORT );

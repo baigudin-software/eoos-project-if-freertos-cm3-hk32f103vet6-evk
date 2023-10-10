@@ -27,7 +27,7 @@ public:
      * @brief Destructor.
      */
     virtual ~CpuTimerController() = 0;
-    
+
     /**
      * @brief Creates a new HW timer resource.
      *
@@ -35,6 +35,13 @@ public:
      * @return A new timer resource, or NULL if an error has been occurred.
      */      
     virtual CpuTimer* createResource(int32_t index) = 0;
+    
+    /**
+     * @brief Gets a System Tick (SysTick) index for RTOS usage.
+     *
+     * @return SysTick index.
+     */
+    virtual int32_t getNumberSystick() const = 0;
 
 };
 

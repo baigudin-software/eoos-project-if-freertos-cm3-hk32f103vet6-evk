@@ -6,8 +6,7 @@
  * @brief Tests of thread yield.
  */
 #include "ThreadYieldTest.hpp"
-#include "lib.Thread.hpp"
-#include "lib.AbstractTask.hpp"
+#include "lib.AbstractThreadTask.hpp"
 
 namespace eoos
 {
@@ -15,10 +14,10 @@ namespace
 {
     
 /**
- * @class Task3
- * @brief Test task 3.
+ * @class Thread3
+ * @brief Test thread 3.
  */
-class Task3 : public lib::AbstractTask<>
+class Thread3 : public lib::AbstractThreadTask<>
 {
     /**
      * @copydoc eoos::api::Task::start()
@@ -37,18 +36,17 @@ class Task3 : public lib::AbstractTask<>
 };
 
 /**
- * @class Task2
- * @brief Test task 2.
+ * @class Thread2
+ * @brief Test thread 2.
  */
-class Task2 : public lib::AbstractTask<>
+class Thread2 : public lib::AbstractThreadTask<>
 {
     /**
      * @copydoc eoos::api::Task::start()
      */        
     virtual void start()
     {
-        Task3 task3;
-        lib::Thread<> thread3(task3);
+        Thread3 thread3;
         thread3.execute();
         int32_t count( 0 );
         while(true)
@@ -65,8 +63,7 @@ class Task2 : public lib::AbstractTask<>
 
 void testThreadYield()
 {
-    Task2 task2;
-    lib::Thread<> thread2(task2);
+    Thread2 thread2;
     thread2.execute();
     int32_t count( 0 );
     while(true)

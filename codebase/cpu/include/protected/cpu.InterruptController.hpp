@@ -61,6 +61,16 @@ public:
     virtual void jump(int32_t exception);
     
     /**
+     * @copydoc eoos::api::CpuInterruptController::getNumberSystick()
+     */      
+    virtual int32_t getNumberSystick() const;
+
+    /**
+     * @copydoc eoos::api::CpuInterruptController::getNumberSupervisor()
+     */      
+    virtual int32_t getNumberSupervisor() const;
+    
+    /**
      * @brief Allocates memory.
      *
      * @param size Number of bytes to allocate.

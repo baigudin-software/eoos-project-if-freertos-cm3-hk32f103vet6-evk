@@ -29,20 +29,6 @@ public:
      * @return The HW processor.
      */
     virtual CpuProcessor& getProcessor() = 0;
-
-    /**
-     * @brief Returns the system timer interrupt resource.
-     *
-     * @return The timer interrupt resource.
-     */
-    virtual CpuInterrupt& getTimerInterrupt() = 0;
-
-    /**
-     * @brief Returns the system timer resource.
-     *
-     * @return The timer resource.
-     */
-    virtual CpuTimer& getTimer() = 0;
     
 protected:
 
