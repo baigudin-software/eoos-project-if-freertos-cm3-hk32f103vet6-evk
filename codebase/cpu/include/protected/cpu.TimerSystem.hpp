@@ -263,4 +263,4 @@ TimerSystem<A>::Data::Data(Registers& areg, api::Guard& agie)
 
 } // namespace cpu
 } // namespace eoos
-#endif // CPU_INTERRUPT_HPP_
+#endif // CPU_TIMERSYSTEM_HPP_

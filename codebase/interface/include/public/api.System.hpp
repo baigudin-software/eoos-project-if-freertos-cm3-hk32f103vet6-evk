@@ -42,13 +42,6 @@ public:
     virtual Scheduler& getScheduler() = 0;
 
     /**
-     * @brief Test if system has the mutex manager.
-     *
-     * @return True if system has the mutex manager.
-     */
-    virtual bool_t hasMutexManager() = 0;
-
-    /**
      * @brief Returns mutex sub-system.
      *
      * @return The mutex sub-system.
@@ -56,25 +49,11 @@ public:
     virtual MutexManager& getMutexManager() = 0;
 
     /**
-     * @brief Test if system has the semaphore manager.
-     *
-     * @return True if system has the semaphore manager.
-     */
-    virtual bool_t hasSemaphoreManager() = 0;
-
-    /**
      * @brief Returns semaphore sub-system.
      *
      * @return The semaphore sub-system.
      */
     virtual SemaphoreManager& getSemaphoreManager() = 0;
-
-    /**
-     * @brief Test if system has the stream manager.
-     *
-     * @return True if system has the stream manager.
-     */
-    virtual bool_t hasStreamManager() = 0;
 
     /**
      * @brief Returns stream sub-system.

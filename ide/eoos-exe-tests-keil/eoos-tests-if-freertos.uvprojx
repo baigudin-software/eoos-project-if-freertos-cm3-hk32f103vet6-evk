@@ -245,7 +245,7 @@
               <MiscControls></MiscControls>
               <Define>EOOS_TYPE_STDLIB EOOS_GLOBAL_ENABLE_NO_HEAP EOOS_GLOBAL_NUMBER_OF_MUTEXS=5 EOOS_GLOBAL_NUMBER_OF_SEMAPHORES=5 EOOS_GLOBAL_NUMBER_OF_THREADS=5 EOOS_CPU_GLOBAL_NUMBER_OF_INTERRUPTS=5 EOOS_CPU_GLOBAL_NUMBER_OF_SYSTEM_TIMERS=1</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\codebase\interface\include\public;..\..\codebase\interface\include\protected;..\..\codebase\library\include\public;..\..\codebase\system\include\public;..\..\codebase\system\include\private;..\..\codebase\cpu\include\protected;..\..\codebase\kernel\include\protected;..\..\codebase\kernel\include\protected\portable;..\..\codebase\tests\include</IncludePath>
+              <IncludePath>..\..\codebase\interface\include\public;..\..\codebase\interface\include\protected;..\..\codebase\library\include\public;..\..\codebase\system\include\public;..\..\codebase\system\include\protected;..\..\codebase\system\include\private;..\..\codebase\cpu\include\protected;..\..\codebase\kernel\include\protected;..\..\codebase\kernel\include\protected\portable;..\..\codebase\tests\include;..\..\codebase\driver\usart\include\public;..\..\codebase\driver\usart\include\private</IncludePath>
             </VariousControls>
           </Carm>
           <Aarm>
@@ -453,6 +453,11 @@
               <FileType>8</FileType>
               <FilePath>..\..\codebase\system\source\sys.SchedulerRoutineTimer.cpp</FilePath>
             </File>
+            <File>
+              <FileName>sys.Svc.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\system\source\sys.Svc.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -487,6 +492,21 @@
               <FileName>SemaphoreTest.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\codebase\tests\source\SemaphoreTest.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>driver</GroupName>
+          <Files>
+            <File>
+              <FileName>drv.UsartController.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\driver\usart\source\drv.UsartController.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>drv.Usart.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\driver\usart\source\drv.Usart.cpp</FilePath>
             </File>
           </Files>
         </Group>

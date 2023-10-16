@@ -7,7 +7,7 @@
 #ifndef PORT_HPP_
 #define PORT_HPP_
 
-#include "api.SystemPort.hpp"
+#include "api.Supervisor.hpp"
 
 namespace eoos
 {
@@ -22,7 +22,7 @@ public:
      *
      * @param eoos EOOS system port.
      */
-    static void initialize(api::SystemPort& port);
+    static void initialize(api::Supervisor& port);
 
     /**
      * @brief Causes to execute FeeRTOS kernel.

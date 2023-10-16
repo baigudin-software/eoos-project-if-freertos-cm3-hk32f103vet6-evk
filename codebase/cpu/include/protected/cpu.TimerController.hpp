@@ -36,7 +36,7 @@ public:
     TimerController(Registers& reg, api::Guard& gie);
 
     /**
-     * Destructor.
+     * @brief Destructor.
      */
     virtual ~TimerController();
 

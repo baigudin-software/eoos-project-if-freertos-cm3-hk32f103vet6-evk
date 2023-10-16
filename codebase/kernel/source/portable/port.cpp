@@ -16,7 +16,7 @@ namespace eoos
 /**
  * @brief The target processor.
  */
-static api::SystemPort* pxPortEoos_( NULLPTR );
+static api::CpuProcessor* pxProcessor_( NULLPTR );
 
 /**
  * @brief Each task maintains its own interrupt status in the critical nesting variable. 
@@ -59,10 +59,10 @@ extern "C" BaseType_t xPortStartScheduler( void )
 {
     // Initialise the critical nesting count ready for the first task.
     uxPortCriticalNesting_ = 0;
-    if( pxPortEoos_ != NULLPTR )
+    if( pxProcessor_ != NULLPTR )
     {
         // Start the first task.
-        pxPortEoos_->getProcessor().bootPrimaryThread();
+        pxProcessor_->bootPrimaryThread();
     }
     // Should never get here as the tasks will now be executing.
     prvTaskExitError();
@@ -75,9 +75,9 @@ extern "C" BaseType_t xPortStartScheduler( void )
  */
 extern "C" void vPortYield(void)
 {
-    if( pxPortEoos_ != NULLPTR )
+    if( pxProcessor_ != NULLPTR )
     {
-        api::CpuInterruptController& ic( pxPortEoos_->getProcessor().getInterruptController() );
+        api::CpuInterruptController& ic( pxProcessor_->getInterruptController() );
         int32_t const source( ic.getNumberSupervisor() );
         ic.jump(source);
     }
@@ -89,9 +89,9 @@ extern "C" void vPortYield(void)
  */
 extern "C" void vPortDisableInterrupts()
 {
-    if( pxPortEoos_ != NULLPTR )
+    if( pxProcessor_ != NULLPTR )
     {
-        static_cast<void>( pxPortEoos_->getProcessor().getInterruptController().getGlobal().lock() );
+        static_cast<void>( pxProcessor_->getInterruptController().getGlobal().lock() );
     }
 }
 
@@ -101,9 +101,9 @@ extern "C" void vPortDisableInterrupts()
  */
 extern "C" void vPortEnableInterrupts()
 {
-    if( pxPortEoos_ != NULLPTR )
+    if( pxProcessor_ != NULLPTR )
     {
-        pxPortEoos_->getProcessor().getInterruptController().getGlobal().unlock();
+        pxProcessor_->getInterruptController().getGlobal().unlock();
     }
 }
 
@@ -113,9 +113,9 @@ extern "C" void vPortEnableInterrupts()
  */
 extern "C" void vPortEnterCritical(void)
 {
-    if( pxPortEoos_ != NULLPTR )
+    if( pxProcessor_ != NULLPTR )
     {
-        bool_t wasEnabled( pxPortEoos_->getProcessor().getInterruptController().getGlobal().lock() );
+        bool_t wasEnabled( pxProcessor_->getInterruptController().getGlobal().lock() );
         if(uxPortCriticalNesting_ == 0)
         {
             wasEnabledOnZero_ = wasEnabled;
@@ -130,14 +130,14 @@ extern "C" void vPortEnterCritical(void)
  */
 extern "C" void vPortExitCritical()
 {
-    if( pxPortEoos_ != NULLPTR )
+    if( pxProcessor_ != NULLPTR )
     {
         configASSERT( uxPortCriticalNesting_ );
         uxPortCriticalNesting_--;
         if( uxPortCriticalNesting_ == 0 && wasEnabledOnZero_ )
         {
             wasEnabledOnZero_ = false;
-            pxPortEoos_->getProcessor().getInterruptController().getGlobal().unlock();
+            pxProcessor_->getInterruptController().getGlobal().unlock();
         }
     }
 }
@@ -151,9 +151,9 @@ extern "C" void vPortExitCritical()
 extern "C" UBaseType_t uxPortEnterCriticalFromISR()
 {
     UBaseType_t prior( 0 );
-    if( pxPortEoos_ != NULLPTR )
+    if( pxProcessor_ != NULLPTR )
     {
-        prior = static_cast<UBaseType_t>( pxPortEoos_->getProcessor().getInterruptController().getGlobal().lock() );
+        prior = static_cast<UBaseType_t>( pxProcessor_->getInterruptController().getGlobal().lock() );
     }
     return prior;
 }
@@ -166,9 +166,9 @@ extern "C" UBaseType_t uxPortEnterCriticalFromISR()
  */
 extern "C" void vPortExitCriticalFromISR(UBaseType_t prior)
 {
-    if( pxPortEoos_ != NULLPTR && prior == 1 )
+    if( pxProcessor_ != NULLPTR && prior == 1 )
     {
-        pxPortEoos_->getProcessor().getInterruptController().getGlobal().unlock();
+        pxProcessor_->getInterruptController().getGlobal().unlock();
     }
 }
 
@@ -188,12 +188,12 @@ extern "C" void vPortExitCriticalFromISR(UBaseType_t prior)
 extern "C" StackType_t* pxPortInitialiseStack(StackType_t* pxTopOfStack, TaskFunction_t pxCode, void* pvParameters)
 {
     void* stack( pxTopOfStack );
-    if( pxPortEoos_ != NULLPTR )
+    if( pxProcessor_ != NULLPTR )
     {
         void* const entry( reinterpret_cast<void*>(pxCode) );
         void* const exit( reinterpret_cast<void*>(prvTaskExitError) );
         int32_t const argument( reinterpret_cast<int32_t>(pvParameters) );
-        stack = pxPortEoos_->getProcessor().getRegistersController().initializeStack(stack, entry, exit, argument);
+        stack = pxProcessor_->getRegistersController().initializeStack(stack, entry, exit, argument);
     }
     return reinterpret_cast<StackType_t*>(stack);
 }
@@ -240,14 +240,14 @@ extern "C" void vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskN
     prvPortStopExecution();
 }
 
-void Kernel::initialize(api::SystemPort& port)
+void Kernel::initialize(api::Supervisor& eoos)
 {
-    pxPortEoos_ = &port;
+    pxProcessor_ = &eoos.getProcessor();
 }
 
 void Kernel::execute()
 {
-    if( pxPortEoos_ != NULLPTR )
+    if( pxProcessor_ != NULLPTR )
     {
         vTaskStartScheduler();
     }

@@ -8,7 +8,7 @@
 
 #include "sys.NonCopyable.hpp"
 #include "api.System.hpp"
-#include "api.SystemPort.hpp"
+#include "api.Supervisor.hpp"
 #include "cpu.Processor.hpp"
 #include "sys.Heap.hpp"
 #include "sys.Scheduler.hpp"
@@ -26,7 +26,7 @@ namespace sys
  * @class System
  * @brief The operating system.
  */
-class System : public NonCopyable<NoAllocator>, public api::System, public api::SystemPort
+class System : public NonCopyable<NoAllocator>, public api::System, public api::Supervisor
 {
     typedef NonCopyable<NoAllocator> Parent;
 
@@ -48,19 +48,9 @@ public:
     virtual api::Heap& getHeap();
 
     /**
-     * @copydoc eoos::api::System::hasMutexManager()
-     */
-    virtual bool_t hasMutexManager();
-
-    /**
      * @copydoc eoos::api::System::getMutexManager()
      */
     virtual api::MutexManager& getMutexManager();
-
-    /**
-     * @copydoc eoos::api::System::hasSemaphoreManager()
-     */
-    virtual bool_t hasSemaphoreManager();
 
     /**
      * @copydoc eoos::api::System::getSemaphoreManager()
@@ -68,17 +58,12 @@ public:
     virtual api::SemaphoreManager& getSemaphoreManager();
     
     /**
-     * @copydoc eoos::api::System::hasStreamManager()
-     */
-    virtual bool_t hasStreamManager();
-
-    /**
      * @copydoc eoos::api::System::getStreamManager()
      */
     virtual api::StreamManager& getStreamManager();
     
     /**
-     * @copydoc eoos::api::SystemPort::getProcessor()
+     * @copydoc eoos::api::Supervisor::getProcessor()
      */
     virtual api::CpuProcessor& getProcessor();
         

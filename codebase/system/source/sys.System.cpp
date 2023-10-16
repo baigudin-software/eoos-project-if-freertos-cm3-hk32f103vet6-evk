@@ -16,7 +16,7 @@ namespace sys
  * 
  * @note Memory is uint64_t type to be align 8.  
  */
-static uint64_t memory_[(sizeof(System) >> 3) + 1]; 
+static uint64_t pull_[(sizeof(System) >> 3) + 1]; 
 
 System*         System::eoos_( NULLPTR );    
 uint32_t        System::varBss_;
@@ -29,7 +29,7 @@ System::Check   System::varObjectByTwoValues_( 0xABCD0000, 0x00001234 );
 System::System()
     : NonCopyable<NoAllocator>()
     , api::System()
-    , api::SystemPort()
+    , api::Supervisor()
     , cpu_()
     , heap_()
     , scheduler_(cpu_)
@@ -68,16 +68,6 @@ api::Heap& System::getHeap()
     return heap_; ///< SCA MISRA-C++:2008 Justified Rule 9-3-2
 }
 
-bool_t System::hasMutexManager()
-{
-    bool_t res( true );
-    if( !isConstructed() )
-    {
-        res = false;
-    }
-    return res;
-}
-
 api::MutexManager& System::getMutexManager()
 {
     if( !isConstructed() )
@@ -87,16 +77,6 @@ api::MutexManager& System::getMutexManager()
     return mutexManager_; ///< SCA MISRA-C++:2008 Justified Rule 9-3-2
 }
 
-bool_t System::hasSemaphoreManager()
-{
-    bool_t res( true );
-    if( !isConstructed() )
-    {
-        res = false;
-    }
-    return res;
-}
-
 api::SemaphoreManager& System::getSemaphoreManager()
 {
     if( !isConstructed() )
@@ -104,16 +84,6 @@ api::SemaphoreManager& System::getSemaphoreManager()
         exit(ERROR_SYSCALL_CALLED);
     }
     return semaphoreManager_; ///< SCA MISRA-C++:2008 Justified Rule 9-3-2
-}
-
-bool_t System::hasStreamManager()
-{
-    bool_t res( true );
-    if( !isConstructed() )
-    {
-        res = false;
-    }
-    return res;
 }
 
 api::StreamManager& System::getStreamManager()
@@ -269,12 +239,12 @@ bool_t System::isVarChecked()
 
 void* System::operator new(size_t size)
 {
-    void* memory( NULLPTR );
+    void* pull( NULLPTR );
     if( size == sizeof(System) && eoos_ == NULLPTR )
     {
-        memory = reinterpret_cast<void*>(memory_);
+        pull = reinterpret_cast<void*>(pull_);
     }
-    return memory;
+    return pull;
 }
 
 void System::operator delete(void* const ptr)

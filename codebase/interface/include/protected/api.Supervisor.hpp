@@ -1,10 +1,10 @@
 /**
- * @file      api.SystemPort.hpp
+ * @file      api.Supervisor.hpp
  * @author    Sergey Baigudin, sergey@baigudin.software
  * @copyright 2023, Sergey Baigudin, Baigudin Software
  */
-#ifndef API_SYSTEMPORT_HPP_
-#define API_SYSTEMPORT_HPP_
+#ifndef API_SUPERVISOR_HPP_
+#define API_SUPERVISOR_HPP_
 
 #include "api.Object.hpp"
 #include "api.CpuProcessor.hpp"
@@ -15,10 +15,10 @@ namespace api
 {
 
 /**
- * @class SystemPort
- * @brief Interface to be used by FreeRTOS ports and other RTOS ports.
+ * @class Supervisor
+ * @brief System interface for supervisor calls of kernel, drivers, extentions, and etc.
  */
-class SystemPort : public Object
+class Supervisor : public Object
 {
 
 public:
@@ -35,12 +35,12 @@ protected:
     /**
      * @brief Destructor.
      */
-    virtual ~SystemPort() = 0;
+    virtual ~Supervisor() = 0;
 
 };
 
-inline SystemPort::~SystemPort(){}
+inline Supervisor::~Supervisor(){}
 
 } // namespace api
 } // namespace eoos
-#endif // API_SYSTEMPORT_HPP_
+#endif // API_SUPERVISOR_HPP_

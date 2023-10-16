@@ -27,10 +27,6 @@
  *
  * @note 
  * 	The EOOS_CPU_GLOBAL_NUMBER_OF_<resource_name> shall be passed to the project build system through compile definition.
- *
- * @note
- *	Currently EOOS_CPU_GLOBAL_NUMBER_OF_<resource_name> feature supported only by EOOS POSIX.
- *  For EOOS WIN32 these defines have no effects.
  */
 #ifndef EOOS_CPU_GLOBAL_NUMBER_OF_INTERRUPTS
     #define EOOS_CPU_GLOBAL_NUMBER_OF_INTERRUPTS (0)

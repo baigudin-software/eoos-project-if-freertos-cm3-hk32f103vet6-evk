@@ -107,12 +107,7 @@ private:
             {   ///< UT Justified Branch: HW dependency
                 break;
             }
-            api::System& system = sys::Call::get();
-            if( !system.hasSemaphoreManager() )
-            {
-                break;
-            }
-            semaphore_ = system.getSemaphoreManager().create(permits);
+            semaphore_ = sys::Call::get().getSemaphoreManager().create(permits);
             if( !Parent::isConstructed(semaphore_) )
             {   ///< UT Justified Branch: HW dependency
                 break;

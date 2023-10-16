@@ -6,6 +6,7 @@
 #ifndef CPU_REGISTERS_HPP_
 #define CPU_REGISTERS_HPP_
 
+#include "cpu.reg.Usart.hpp"
 #include "cpu.reg.Rcc.hpp"
 #include "cpu.reg.Flash.hpp"
 #include "cpu.reg.Auxiliary.hpp"
@@ -28,6 +29,17 @@ struct Registers
      * @brief Constructor.
      */    
     Registers();
+
+    /**
+     * @brief Universal Synchronous Asynchronous Transceiver (USART).
+     *
+     * USART1: 0x40013800 - 0x40013BFF;
+     * USART2: 0x40004400 - 0x400047FF;
+     * USART3: 0x40004800 - 0x40004BFF;
+     * UART4 : 0x40004C00 - 0x40004FFF;
+     * UART5 : 0x40005000 - 0x400053FF;
+     */
+    reg::Usart* usart[5];
 
     /**
      * @brief Reset and Clock Control.

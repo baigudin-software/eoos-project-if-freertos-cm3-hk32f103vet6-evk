@@ -117,12 +117,7 @@ private:
             {   ///< UT Justified Branch: HW dependency
                 break;
             }
-            api::System& system = sys::Call::get();
-            if( !system.hasMutexManager() )
-            {
-                break;
-            }
-            mutex_ = system.getMutexManager().create();
+            mutex_ = sys::Call::get().getMutexManager().create();
             if( !Parent::isConstructed(mutex_) )
             {   ///< UT Justified Branch: HW dependency
                 break;

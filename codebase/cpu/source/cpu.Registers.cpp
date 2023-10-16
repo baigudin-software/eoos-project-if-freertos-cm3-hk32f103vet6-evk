@@ -14,6 +14,11 @@ Registers::Registers()
     : rcc   ( new (reg::Rcc::ADDRESS)   reg::Rcc   )
     , flash ( new (reg::Flash::ADDRESS) reg::Flash ) 
     , scs() {
+    usart[0] = new (reg::Usart::ADDRESS_USART1) reg::Usart;
+    usart[1] = new (reg::Usart::ADDRESS_USART2) reg::Usart;
+    usart[2] = new (reg::Usart::ADDRESS_USART3) reg::Usart;
+    usart[3] = new (reg::Usart::ADDRESS_UART4)  reg::Usart;
+    usart[4] = new (reg::Usart::ADDRESS_UART5)  reg::Usart;    
 }
    
 Registers::Scs::Scs()
