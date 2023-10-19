@@ -24,6 +24,7 @@ namespace cpu
 class InterruptController : public NonCopyable<NoAllocator>, public api::CpuInterruptController
 {
     typedef NonCopyable<NoAllocator> Parent;
+    typedef Interrupt<InterruptController> Resource;
 
 public:
 
@@ -102,12 +103,12 @@ private:
     bool_t construct();
 
     /**
-     * @brief Initializes the allocator with heap for allocation.
+     * @brief Initializes the allocator with heap for resource allocation.
      *
-     * @param heap Heap for allocation.
+     * @param resource Heap for allocation.
      * @return True if initialized.
      */
-    bool_t initialize(api::Heap* heap);
+    bool_t initialize(api::Heap* resource);
 
     /**
      * @brief Deinitializes the allocator.
@@ -115,9 +116,9 @@ private:
     static void deinitialize();
     
     /**
-     * @brief Heap for allocation.
+     * @brief Heap for resource allocation.
      */
-    static api::Heap* heap_;
+    static api::Heap* resource_;
 
     /**
      * @brief This object.
@@ -126,7 +127,7 @@ private:
 
     /**
      * @brief Target CPU register model.
-     */        
+     */
     Registers& reg_;
     
     /**
@@ -137,12 +138,12 @@ private:
     /**
      * @brief Resource memory allocator.
      */     
-    lib::ResourceMemory<Interrupt<InterruptController>, EOOS_CPU_GLOBAL_NUMBER_OF_INTERRUPTS> memory_;
+    lib::ResourceMemory<Resource, EOOS_CPU_GLOBAL_NUMBER_OF_INTERRUPTS> memory_;
     
     /**
      * @brief Global data for all Interrupt objects;
      */    
-    Interrupt<InterruptController>::Data data_;
+    Resource::Data data_;
 
 };
     

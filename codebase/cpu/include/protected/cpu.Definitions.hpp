@@ -22,18 +22,38 @@
  * 
  * @note 
  *  To comply MISRA-C++:2008 in Rule 18–4–1:
- *  - EOOS_CPU_GLOBAL_NUMBER_OF_<resource_name> shall not equal zero
- *  - EOOS_GLOBAL_ENABLE_NO_HEAP shall be defined.
+ *  - EOOS_CPU_GLOBAL_NUMBER_OF_<resource_name> must not equal zero
+ *  - EOOS_GLOBAL_ENABLE_NO_HEAP must be defined.
  *
  * @note 
  * 	The EOOS_CPU_GLOBAL_NUMBER_OF_<resource_name> shall be passed to the project build system through compile definition.
  */
 #ifndef EOOS_CPU_GLOBAL_NUMBER_OF_INTERRUPTS
-    #define EOOS_CPU_GLOBAL_NUMBER_OF_INTERRUPTS (0)
+    /**
+     * @brief Number of Interrupt resources.
+     *
+     * @note This value shall not be more than Exeption Numbers of the MCU.
+     * @note Reserve 2 resources by default for the EOOS system usage.
+     */
+    #define EOOS_CPU_GLOBAL_NUMBER_OF_INTERRUPTS (2)
 #endif
 
 #ifndef EOOS_CPU_GLOBAL_NUMBER_OF_SYSTEM_TIMERS
-    #define EOOS_CPU_GLOBAL_NUMBER_OF_SYSTEM_TIMERS (0)
+    /**
+     * @brief Number of System Timer resources that must equal to 1.
+     */
+    #define EOOS_CPU_GLOBAL_NUMBER_OF_SYSTEM_TIMERS (1)
+#endif
+
+/**
+ * @brief Do compile error check of static allocated resources.
+ */
+#ifndef EOOS_GLOBAL_ENABLE_NO_HEAP
+    #error "The EOOS_GLOBAL_ENABLE_NO_HEAP must be defined for EOOS CPU layer to comply MISRA-C++:2008"
+#endif
+
+#if EOOS_CPU_GLOBAL_NUMBER_OF_INTERRUPTS < 2
+    #error "Number of interrupt resources must be more than 2 for EOOS System usage"
 #endif
 
 #if EOOS_CPU_GLOBAL_NUMBER_OF_SYSTEM_TIMERS > 1

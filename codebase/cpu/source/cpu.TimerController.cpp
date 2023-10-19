@@ -11,7 +11,7 @@ namespace eoos
 namespace cpu
 {
     
-api::Heap* TimerController::heap_( NULLPTR );
+api::Heap* TimerController::resource_( NULLPTR );
 
 TimerController::TimerController(Registers& reg, api::Guard& gie)
     : NonCopyable<NoAllocator>()
@@ -37,7 +37,7 @@ bool_t TimerController::isConstructed() const
 api::CpuTimer* TimerController::createResource(int32_t index)
 {
     api::CpuTimer* res( NULLPTR );
-    if( index == TimerSystem<TimerController>::INDEX_SYSTICK )
+    if( index == Resource::INDEX_SYSTICK )
     {
         // @todo Test if the System Timer is already created.
         // By now this promlem is solved only by defining 
@@ -52,7 +52,7 @@ api::CpuTimer* TimerController::createResourceTimerSystem()
     api::CpuTimer* ptr( NULLPTR );
     if( isConstructed() )
     {
-        lib::UniquePointer<api::CpuTimer> res( new TimerSystem<TimerController>(data_) );
+        lib::UniquePointer<api::CpuTimer> res( new Resource(data_) );
         if( !res.isNull() )
         {
             if( !res->isConstructed() )
@@ -67,7 +67,7 @@ api::CpuTimer* TimerController::createResourceTimerSystem()
 
 int32_t TimerController::getNumberSystick() const
 {
-    return TimerSystem<TimerController>::INDEX_SYSTICK;
+    return Resource::INDEX_SYSTICK;
 }
 
 bool_t TimerController::construct()
@@ -94,9 +94,9 @@ bool_t TimerController::construct()
 
 void* TimerController::allocate(size_t size)
 {
-    if( heap_ != NULLPTR )
+    if( resource_ != NULLPTR )
     {
-        return heap_->allocate(size, NULLPTR);
+        return resource_->allocate(size, NULLPTR);
     }
     else
     {
@@ -106,28 +106,28 @@ void* TimerController::allocate(size_t size)
 
 void TimerController::free(void* ptr)
 {
-    if( heap_ != NULLPTR )
+    if( resource_ != NULLPTR )
     {
-        heap_->free(ptr);
+        resource_->free(ptr);
     }
 }
 
-bool_t TimerController::initialize(api::Heap* heap)
+bool_t TimerController::initialize(api::Heap* resource)
 {
-    if( heap_ != NULLPTR )
+    if( resource_ != NULLPTR )
     {
         return false;
     }
     else
     {
-        heap_ = heap;
+        resource_ = resource;
         return true;
     }
 }
 
 void TimerController::deinitialize()
 {
-    heap_ = NULLPTR;
+    resource_ = NULLPTR;
 }
 
 } // namespace cpu

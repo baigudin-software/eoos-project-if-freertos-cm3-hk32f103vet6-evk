@@ -11,7 +11,7 @@ namespace eoos
 namespace sys
 {
 
-api::Heap* Scheduler::heap_( NULLPTR );
+api::Heap* Scheduler::resource_( NULLPTR );
 
 Scheduler::Scheduler(api::CpuProcessor& cpu)
     : NonCopyable<NoAllocator>()
@@ -22,8 +22,7 @@ Scheduler::Scheduler(api::CpuProcessor& cpu)
     , tim_( NULLPTR )
     , intTim_( NULLPTR )
     , intSvc_( NULLPTR )
-    , mutex_()
-    , memory_( mutex_ ) {
+    , pool_() {
     bool_t const isConstructed( construct() );
     setConstructed( isConstructed );    
 }
@@ -43,7 +42,7 @@ api::Thread* Scheduler::createThread(api::Task& task)
     api::Thread* ptr( NULLPTR );
     if( isConstructed() )
     {
-        lib::UniquePointer<api::Thread> res( new Thread<Scheduler>(task) );
+        lib::UniquePointer<api::Thread> res( new Resource(task) );
         if( !res.isNull() )
         {
             if( !res->isConstructed() )
@@ -101,11 +100,11 @@ bool_t Scheduler::construct()
         {
             break;
         }
-        if( !memory_.isConstructed() )
+        if( !pool_.memory.isConstructed() )
         {
             break;
         }
-        if( !Scheduler::initialize(&memory_) )
+        if( !Scheduler::initialize(&pool_.memory) )
         {
             break;
         }
@@ -145,9 +144,9 @@ bool_t Scheduler::msSleep(int32_t ms)
 
 void* Scheduler::allocate(size_t size)
 {
-    if( heap_ != NULLPTR )
+    if( resource_ != NULLPTR )
     {
-        return heap_->allocate(size, NULLPTR);
+        return resource_->allocate(size, NULLPTR);
     }
     else
     {
@@ -157,22 +156,22 @@ void* Scheduler::allocate(size_t size)
 
 void Scheduler::free(void* ptr)
 {
-    if( heap_ != NULLPTR )
+    if( resource_ != NULLPTR )
     {
-        heap_->free(ptr);
+        resource_->free(ptr);
     }
 }
 
-bool_t Scheduler::initialize(api::Heap* heap)
+bool_t Scheduler::initialize(api::Heap* resource)
 {
     bool_t res( false );
     do 
     {
-        if( heap_ != NULLPTR )
+        if( resource_ != NULLPTR )
         {
             break;
         }
-        heap_ = heap;
+        resource_ = resource;
         // Create System Timer
         int32_t number( 0 );
         number = cpu_.getTimerController().getNumberSystick();
@@ -225,7 +224,12 @@ void Scheduler::deinitialize()
     {
         delete tim_;
     }
-    heap_ = NULLPTR;
+    resource_ = NULLPTR;
+}
+
+Scheduler::ResourcePool::ResourcePool()
+    : mutex_()
+    , memory( mutex_ ) {
 }
 
 } // namespace sys

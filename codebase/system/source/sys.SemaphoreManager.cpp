@@ -11,13 +11,12 @@ namespace eoos
 namespace sys
 {
 
-api::Heap* SemaphoreManager::heap_( NULLPTR );
+api::Heap* SemaphoreManager::resource_( NULLPTR );
 
 SemaphoreManager::SemaphoreManager() 
     : NonCopyable<NoAllocator>()
     , api::SemaphoreManager()
-    , mutex_()
-    , memory_(mutex_) {
+    , pool_() {
     bool_t const isConstructed( construct() );
     setConstructed( isConstructed );
 }
@@ -37,7 +36,7 @@ api::Semaphore* SemaphoreManager::create(int32_t permits)
     api::Semaphore* ptr( NULLPTR );
     if( isConstructed() )
     {
-        lib::UniquePointer<api::Semaphore> res( new Semaphore<SemaphoreManager>(permits) );
+        lib::UniquePointer<api::Semaphore> res( new Resource(permits) );
         if( !res.isNull() )
         {
             if( !res->isConstructed() )
@@ -59,11 +58,11 @@ bool_t SemaphoreManager::construct()
         {
             break;
         }
-        if( !memory_.isConstructed() )
+        if( !pool_.memory.isConstructed() )
         {
             break;
         }
-        if( !SemaphoreManager::initialize(&memory_) )
+        if( !SemaphoreManager::initialize(&pool_.memory) )
         {
             break;
         }
@@ -74,9 +73,9 @@ bool_t SemaphoreManager::construct()
 
 void* SemaphoreManager::allocate(size_t size)
 {
-    if( heap_ != NULLPTR )
+    if( resource_ != NULLPTR )
     {
-        return heap_->allocate(size, NULLPTR);
+        return resource_->allocate(size, NULLPTR);
     }
     else
     {
@@ -86,17 +85,17 @@ void* SemaphoreManager::allocate(size_t size)
 
 void SemaphoreManager::free(void* ptr)
 {
-    if( heap_ != NULLPTR )
+    if( resource_ != NULLPTR )
     {
-        heap_->free(ptr);
+        resource_->free(ptr);
     }
 }
 
-bool_t SemaphoreManager::initialize(api::Heap* heap)
+bool_t SemaphoreManager::initialize(api::Heap* resource)
 {
-    if( heap_ == NULLPTR )
+    if( resource_ == NULLPTR )
     {
-        heap_ = heap;
+        resource_ = resource;
         return true;
     }
     else
@@ -107,7 +106,12 @@ bool_t SemaphoreManager::initialize(api::Heap* heap)
 
 void SemaphoreManager::deinitialize()
 {
-    heap_ = NULLPTR;
+    resource_ = NULLPTR;
+}
+
+SemaphoreManager::ResourcePool::ResourcePool()
+    : mutex_()
+    , memory( mutex_ ) {
 }
 
 } // namespace sys

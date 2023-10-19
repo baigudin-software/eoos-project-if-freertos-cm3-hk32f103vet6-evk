@@ -12,11 +12,11 @@ namespace sys
 {
     
 /**
- * @brief EOOS system memory pull.
+ * @brief EOOS system memory.
  * 
  * @note Memory is uint64_t type to be align 8.  
  */
-static uint64_t pull_[(sizeof(System) >> 3) + 1]; 
+static uint64_t memory_[(sizeof(System) >> 3) + 1]; 
 
 System*         System::eoos_( NULLPTR );    
 uint32_t        System::varBss_;
@@ -239,12 +239,12 @@ bool_t System::isVarChecked()
 
 void* System::operator new(size_t size)
 {
-    void* pull( NULLPTR );
+    void* memory( NULLPTR );
     if( size == sizeof(System) && eoos_ == NULLPTR )
     {
-        pull = reinterpret_cast<void*>(pull_);
+        memory = reinterpret_cast<void*>(memory_);
     }
-    return pull;
+    return memory;
 }
 
 void System::operator delete(void* const ptr)

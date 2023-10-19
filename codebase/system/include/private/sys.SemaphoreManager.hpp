@@ -24,6 +24,7 @@ namespace sys
 class SemaphoreManager : public NonCopyable<NoAllocator>, public api::SemaphoreManager
 {
     typedef NonCopyable<NoAllocator> Parent;
+    typedef Semaphore<SemaphoreManager> Resource;
 
 public:
 
@@ -76,33 +77,58 @@ private:
     bool_t construct();
 
     /**
-     * @brief Initializes the allocator with heap for allocation.
+     * @brief Initializes the allocator with heap for resource allocation.
      *
-     * @param heap Heap for allocation.
+     * @param resource Heap for resource allocation.
      * @return True if initialized.
      */
-    static bool_t initialize(api::Heap* heap);
+    static bool_t initialize(api::Heap* resource);
 
     /**
      * @brief Initializes the allocator.
      */
     static void deinitialize();
-
+    
     /**
-     * @brief Heap for allocation.
+     * @struct ResourcePool
+     * @brief Resource memory pool.
      */
-    static api::Heap* heap_;
-    
-    /**
-     * @brief Mutex resource.
-     */    
-    Mutex<NoAllocator> mutex_;
-    
-    /**
-     * @brief Semaphore memory allocator.
-     */     
-    lib::ResourceMemory<Semaphore<SemaphoreManager>, EOOS_GLOBAL_NUMBER_OF_SEMAPHORES> memory_;
+    struct ResourcePool
+    {
 
+    public:
+        
+        /**
+         * @brief Constructor.
+         */
+        ResourcePool();
+
+    private:
+            
+        /**
+         * @brief Mutex resource.
+         */    
+        Mutex<NoAllocator> mutex_;
+        
+    public:
+        
+        /**
+         * @brief Semaphore memory allocator.
+         */     
+        lib::ResourceMemory<Resource, EOOS_GLOBAL_NUMBER_OF_SEMAPHORES> memory;
+
+    };    
+
+    /**
+     * @brief Heap for resource allocation.
+     */
+    static api::Heap* resource_;
+
+    /**
+     * @brief Resource memory pool.
+     */
+    ResourcePool pool_;
+    
 };
 
 } // namespace sys

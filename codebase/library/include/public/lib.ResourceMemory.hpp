@@ -78,12 +78,12 @@ private:
     api::Guard& guard_;
 
     /**
-     * @brief Resource memory pull. 
+     * @brief Resource memory pool. 
      */
     bool_t isAllocated_[N]; 
 
     /**
-     * @brief Resource memory pull.
+     * @brief Resource memory pool.
      * 
      * @note Memory is double array of uint64_t type to be align 8.  
      */
@@ -114,25 +114,28 @@ bool_t ResourceMemory<T,N>::isConstructed() const
 template <typename T, int32_t N>
 void* ResourceMemory<T,N>::allocate(size_t size, void* ptr)
 {
-    lib::Guard<NoAllocator> guard( guard_ );
-    if( size != sizeof(T) )
+    if( isConstructed() )
     {
-        return NULLPTR;
-    }
-    for(int32_t i(0); i<N; i++)
-    {
-        if( isAllocated_[i] == true )
-        {
-            continue;
-        }
-        uint64_t* const memory( memory_[i] );
-        uintptr_t const address( reinterpret_cast<uintptr_t>(memory) );
-        if( ( address & 0x7 ) != 0 )
+        lib::Guard<NoAllocator> guard( guard_ );
+        if( size != sizeof(T) )
         {
             return NULLPTR;
         }
-        isAllocated_[i] = true;
-        return memory;
+        for(int32_t i(0); i<N; i++)
+        {
+            if( isAllocated_[i] == true )
+            {
+                continue;
+            }
+            uint64_t* const memory( memory_[i] );
+            uintptr_t const address( reinterpret_cast<uintptr_t>(memory) );
+            if( ( address & 0x7 ) != 0 )
+            {
+                return NULLPTR;
+            }
+            isAllocated_[i] = true;
+            return memory;
+        }
     }
     return NULLPTR;
 }
@@ -140,13 +143,16 @@ void* ResourceMemory<T,N>::allocate(size_t size, void* ptr)
 template <typename T, int32_t N>
 void ResourceMemory<T,N>::free(void* ptr)
 {
-    lib::Guard<NoAllocator> guard( guard_ );
-    for(int32_t i(0); i<N; i++)
+    if( isConstructed() )
     {
-        if( memory_[i] == ptr )
+        lib::Guard<NoAllocator> guard( guard_ );
+        for(int32_t i(0); i<N; i++)
         {
-            isAllocated_[i] = false;
-            return;
+            if( memory_[i] == ptr )
+            {
+                isAllocated_[i] = false;
+                return;
+            }
         }
     }
 }
@@ -159,6 +165,10 @@ bool_t ResourceMemory<T,N>::construct()
     {
         if( !isConstructed() )
         {   ///< UT Justified Branch: HW dependency
+            break;
+        }
+        if( !guard_.isConstructed() )
+        {
             break;
         }
         for(int32_t i(0); i<N; i++)

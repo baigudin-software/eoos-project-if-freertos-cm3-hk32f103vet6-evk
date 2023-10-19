@@ -11,13 +11,12 @@ namespace eoos
 namespace sys
 {
 
-api::Heap* MutexManager::heap_( NULLPTR );
+api::Heap* MutexManager::resource_( NULLPTR );
 
 MutexManager::MutexManager() 
     : NonCopyable<NoAllocator>()
     , api::MutexManager()
-    , mutex_()
-    , memory_(mutex_) {
+    , pool_() {
     bool_t const isConstructed( construct() );
     setConstructed( isConstructed );
 }
@@ -37,7 +36,7 @@ api::Mutex* MutexManager::create()
     api::Mutex* ptr( NULLPTR );
     if( isConstructed() )
     {
-        lib::UniquePointer<api::Mutex> res( new Mutex<MutexManager>() );
+        lib::UniquePointer<api::Mutex> res( new Resource() );
         if( !res.isNull() )
         {
             if( !res->isConstructed() )
@@ -59,11 +58,11 @@ bool_t MutexManager::construct()
         {
             break;
         }
-        if( !memory_.isConstructed() )
+        if( !pool_.memory.isConstructed() )
         {
             break;
         }
-        if( !MutexManager::initialize(&memory_) )
+        if( !MutexManager::initialize(&pool_.memory) )
         {
             break;
         }
@@ -74,9 +73,9 @@ bool_t MutexManager::construct()
 
 void* MutexManager::allocate(size_t size)
 {
-    if( heap_ != NULLPTR )
+    if( resource_ != NULLPTR )
     {
-        return heap_->allocate(size, NULLPTR);
+        return resource_->allocate(size, NULLPTR);
     }
     else
     {
@@ -86,17 +85,17 @@ void* MutexManager::allocate(size_t size)
 
 void MutexManager::free(void* ptr)
 {
-    if( heap_ != NULLPTR )
+    if( resource_ != NULLPTR )
     {
-        heap_->free(ptr);
+        resource_->free(ptr);
     }
 }
 
-bool_t MutexManager::initialize(api::Heap* heap)
+bool_t MutexManager::initialize(api::Heap* resource)
 {
-    if( heap_ == NULLPTR )
+    if( resource_ == NULLPTR )
     {
-        heap_ = heap;
+        resource_ = resource;
         return true;
     }
     else
@@ -107,7 +106,12 @@ bool_t MutexManager::initialize(api::Heap* heap)
 
 void MutexManager::deinitialize()
 {
-    heap_ = NULLPTR;
+    resource_ = NULLPTR;
+}
+
+MutexManager::ResourcePool::ResourcePool()
+    : mutex_()
+    , memory( mutex_ ) {
 }
 
 } // namespace sys

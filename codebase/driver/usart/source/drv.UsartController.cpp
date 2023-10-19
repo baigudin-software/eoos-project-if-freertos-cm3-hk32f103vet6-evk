@@ -4,8 +4,9 @@
  * @copyright 2019-2023, Sergey Baigudin, Baigudin Software
  */  
 #include "drv.UsartController.hpp"
-#include "lib.UniquePointer.hpp"
+#include "sys.Svc.hpp"
 #include "cpu.reg.Usart.hpp"
+#include "lib.UniquePointer.hpp"
 
 namespace eoos
 {
@@ -13,18 +14,19 @@ namespace drv
 {
     
 /**
- * @brief Driver memory pull.
+ * @brief Driver memory pool.
  * 
  * @note Memory is uint64_t type to be align 8.  
  */
-static uint64_t pull_[(sizeof(UsartController) >> 3) + 1]; 
+static uint64_t memory_[(sizeof(UsartController) >> 3) + 1]; 
     
-api::Heap* UsartController::heap_( NULLPTR );
+api::Heap* UsartController::resource_( NULLPTR );
 
 UsartController::UsartController()
     : lib::NonCopyable<lib::NoAllocator>()
-    , mutex_()
-    , memory_(mutex_) {        
+    , reg_()
+    , pool_()
+    , data_( reg_, sys::Svc::get() ) {        
     bool_t const isConstructed( construct() );
     setConstructed( isConstructed );
 }
@@ -44,7 +46,7 @@ UsartController::Resource* UsartController::createResource(int32_t number)
     Resource* ptr( NULLPTR );
     if( isConstructed() )
     {
-        lib::UniquePointer<Resource> res( new Resource(number) );
+        lib::UniquePointer<Resource> res( new Resource(data_, number) );
         if( !res.isNull() )
         {
             if( !res->isConstructed() )
@@ -66,11 +68,11 @@ bool_t UsartController::construct()
         {
             break;
         }
-        if( !memory_.isConstructed() )
+        if( !pool_.memory.isConstructed() )
         {
             break;
         }
-        if( !initialize(&memory_) )
+        if( !initialize(&pool_.memory) )
         {
             break;
         }
@@ -81,9 +83,9 @@ bool_t UsartController::construct()
 
 void* UsartController::allocate(size_t size)
 {
-    if( heap_ != NULLPTR )
+    if( resource_ != NULLPTR )
     {
-        return heap_->allocate(size, NULLPTR);
+        return resource_->allocate(size, NULLPTR);
     }
     else
     {
@@ -93,42 +95,47 @@ void* UsartController::allocate(size_t size)
 
 void UsartController::free(void* ptr)
 {
-    if( heap_ != NULLPTR )
+    if( resource_ != NULLPTR )
     {
-        heap_->free(ptr);
+        resource_->free(ptr);
     }
 }
 
-bool_t UsartController::initialize(api::Heap* heap)
+bool_t UsartController::initialize(api::Heap* resource)
 {
-    if( heap_ != NULLPTR )
+    if( resource_ != NULLPTR )
     {
         return false;
     }
     else
     {
-        heap_ = heap;
+        resource_ = resource;
         return true;
     }
 }
 
 void UsartController::deinitialize()
 {
-    heap_ = NULLPTR;
+    resource_ = NULLPTR;
 }
 
 void* UsartController::operator new(size_t size)
 {
-    void* pull( NULLPTR );
+    void* memory( NULLPTR );
     if( size == sizeof(UsartController) )
     {
-        pull = reinterpret_cast<void*>(pull_);
+        memory = reinterpret_cast<void*>(memory_);
     }
-    return pull;
+    return memory;
 }
 
 void UsartController::operator delete(void* const ptr)
 {
+}
+
+UsartController::ResourcePool::ResourcePool()
+    : mutex_()
+    , memory( mutex_ ) {
 }
 
 } // namespace cpu

@@ -10,6 +10,7 @@
 #include "ThreadYieldTest.hpp"
 #include "MutexTest.hpp"
 #include "SemaphoreTest.hpp"
+#include "DriverUsartTest.hpp"
 
 namespace eoos
 {
@@ -20,16 +21,19 @@ namespace eoos
 int32_t Program::start(int32_t argc, char_t* argv[])
 {
     // Comment to lock or uncomment to execute
-    testContexSwitch();
+    // testContexSwitch();
     
     // Comment to lock or uncomment to execute
-    testThreadYield();
+    // testThreadYield();
 
     // Comment to lock or uncomment to execute    
-    testMutex();
+    // testMutex();
 
     // Comment to lock or uncomment to execute    
-    testSemaphore();
+    // testSemaphore();
+
+    // Comment to lock or uncomment to execute    
+    testDriverUsart();
     
     // This is the Primary Task of FreeRTOS, and as soon as 
     // the RTOS does not support task exiting, do infinity loop.

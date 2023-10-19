@@ -22,14 +22,24 @@
  * 
  * @note 
  *  To comply MISRA-C++:2008 in Rule 18–4–1:
- *  - EOOS_DRV_GLOBAL_NUMBER_OF_<resource_name> shall not equal zero
- *  - EOOS_GLOBAL_ENABLE_NO_HEAP shall be defined.
+ *  - EOOS_DRV_GLOBAL_NUMBER_OF_<resource_name> must not equal zero
+ *  - EOOS_GLOBAL_ENABLE_NO_HEAP must be defined.
  *
  * @note 
  * 	The EOOS_DRV_GLOBAL_NUMBER_OF_<resource_name> shall be passed to the project build system through compile definition.
  */
 #ifndef EOOS_DRV_GLOBAL_NUMBER_OF_USARTS
-    #define EOOS_DRV_GLOBAL_NUMBER_OF_USARTS (5)
+    /**
+     * @brief Number of USART driver resources that must be form 1 to 5.
+     */
+    #define EOOS_DRV_GLOBAL_NUMBER_OF_USARTS (1)
+#endif
+
+/**
+ * @brief Do compile error check of static allocated resources.
+ */
+#ifndef EOOS_GLOBAL_ENABLE_NO_HEAP
+    #error "The EOOS_GLOBAL_ENABLE_NO_HEAP must be defined for EOOS Driver layer to comply MISRA-C++:2008"
 #endif
 
 #endif // DRV_USARTDEFINITIONS_HPP_

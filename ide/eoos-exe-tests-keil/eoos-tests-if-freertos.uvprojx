@@ -493,6 +493,11 @@
               <FileType>8</FileType>
               <FilePath>..\..\codebase\tests\source\SemaphoreTest.cpp</FilePath>
             </File>
+            <File>
+              <FileName>DriverUsartTest.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\tests\source\DriverUsartTest.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

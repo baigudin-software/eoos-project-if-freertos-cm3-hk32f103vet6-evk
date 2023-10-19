@@ -40,7 +40,7 @@ extern "C" void CpuInterruptController_handleException(int32_t exception)
 }
 
     
-api::Heap* InterruptController::heap_( NULLPTR );
+api::Heap* InterruptController::resource_( NULLPTR );
 
 InterruptController* InterruptController::this_( NULLPTR );
 
@@ -70,7 +70,7 @@ api::CpuInterrupt* InterruptController::createResource(api::Task& handler, int32
     api::CpuInterrupt* ptr( NULLPTR );
     if( isConstructed() )
     {
-        lib::UniquePointer<api::CpuInterrupt> res( new Interrupt<InterruptController>(data_, handler, source) );
+        lib::UniquePointer<api::CpuInterrupt> res( new Resource(data_, handler, source) );
         if( !res.isNull() )
         {
             if( !res->isConstructed() )
@@ -90,7 +90,7 @@ api::Guard& InterruptController::getGlobal()
 
 void InterruptController::jump(int32_t exception)
 {
-    if( !Interrupt<InterruptController>::isException(exception) )
+    if( !Resource::isException(exception) )
     {
         return;
     }
@@ -106,12 +106,12 @@ void InterruptController::jump(int32_t exception)
 
 int32_t InterruptController::getNumberSystick() const
 {
-    return Interrupt<InterruptController>::EXCEPTION_SYSTICK;
+    return Resource::EXCEPTION_SYSTICK;
 }
 
 int32_t InterruptController::getNumberSupervisor() const
 {
-    return Interrupt<InterruptController>::EXCEPTION_SVCALL;
+    return Resource::EXCEPTION_SVCALL;
 }
 
 bool_t InterruptController::construct()
@@ -138,9 +138,9 @@ bool_t InterruptController::construct()
 
 void* InterruptController::allocate(size_t size)
 {
-    if( heap_ != NULLPTR )
+    if( resource_ != NULLPTR )
     {
-        return heap_->allocate(size, NULLPTR);
+        return resource_->allocate(size, NULLPTR);
     }
     else
     {
@@ -150,9 +150,9 @@ void* InterruptController::allocate(size_t size)
 
 void InterruptController::free(void* ptr)
 {
-    if( heap_ != NULLPTR )
+    if( resource_ != NULLPTR )
     {
-        heap_->free(ptr);
+        resource_->free(ptr);
     }
 }
 
@@ -164,7 +164,7 @@ void InterruptController::handleException(int32_t exception)
     {
         return;
     }
-    if( !Interrupt<InterruptController>::isException(exception) )
+    if( !Resource::isException(exception) )
     {
         return;
     }
@@ -176,20 +176,20 @@ void InterruptController::handleException(int32_t exception)
     this_->data_.handlers[exception]->start();
 }
 
-bool_t InterruptController::initialize(api::Heap* heap)
+bool_t InterruptController::initialize(api::Heap* resource)
 {
-    if( heap_ != NULLPTR || this_ != NULLPTR) 
+    if( resource_ != NULLPTR || this_ != NULLPTR) 
     {
         return false;
     }
-    heap_ = heap;
+    resource_ = resource;
     this_ = this;
     return true;
 }
 
 void InterruptController::deinitialize()
 {
-    heap_ = NULLPTR;
+    resource_ = NULLPTR;
     this_ = NULLPTR;
 }
     

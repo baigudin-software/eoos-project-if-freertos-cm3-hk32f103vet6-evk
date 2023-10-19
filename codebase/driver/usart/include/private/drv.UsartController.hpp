@@ -12,10 +12,7 @@
 #include "lib.NoAllocator.hpp"
 #include "lib.Mutex.hpp"
 #include "lib.ResourceMemory.hpp"
-
-#ifndef EOOS_DRV_GLOBAL_NUMBER_OF_USARTS
-#define EOOS_DRV_GLOBAL_NUMBER_OF_USARTS (5)
-#endif
+#include "cpu.Registers.hpp"
 
 namespace eoos
 {
@@ -29,14 +26,9 @@ namespace drv
 class UsartController : public lib::NonCopyable<lib::NoAllocator>
 {
     typedef lib::NonCopyable<lib::NoAllocator> Parent;
+    typedef UsartResource<UsartController> Resource;
     
 public:
-
-    /**
-     * @class Resource.
-     * @brief Universal Synchronous Asynchronous Transceiver (USART) resource.
-     */
-    typedef UsartResource<UsartController> Resource;
 
     /**
      * @brief Constructor.
@@ -106,10 +98,10 @@ private:
     /**
      * @brief Initializes the allocator with heap for allocation.
      *
-     * @param heap Heap for allocation.
+     * @param resource Heap for resource allocation.
      * @return True if initialized.
      */
-    static bool_t initialize(api::Heap* heap);
+    static bool_t initialize(api::Heap* resource);
 
     /**
      * @brief Deinitializes the allocator.
@@ -117,19 +109,56 @@ private:
     static void deinitialize();
     
     /**
-     * @brief Heap for allocation.
+     * @struct ResourcePool
+     * @brief Resource memory pool.
      */
-    static api::Heap* heap_;
+    struct ResourcePool
+    {
+
+    public:
+        
+        /**
+         * @brief Constructor.
+         */        
+        ResourcePool();
+
+    private:
+            
+        /**
+         * @brief Mutex resource.
+         */    
+        lib::Mutex<lib::NoAllocator> mutex_;
+    
+    public:
+    
+        /**
+         * @brief Resource memory allocator.
+         */
+        lib::ResourceMemory<Resource, EOOS_DRV_GLOBAL_NUMBER_OF_USARTS> memory;
+
+    };    
     
     /**
-     * @brief Mutex resource.
+     * @brief Heap for resource allocation.
+     */
+    static api::Heap* resource_;
+    
+    /**
+     * @brief Target CPU register model.
+     *
+     * @note Declare this here not in the resource class to minimize memory needed.
      */    
-    lib::Mutex<lib::NoAllocator> mutex_;
+    cpu::Registers reg_;
+    
+    /**
+     * @brief Resource memory pool.
+     */
+    ResourcePool pool_;
 
     /**
-     * @brief Resource memory allocator.
-     */
-    lib::ResourceMemory<Resource, EOOS_DRV_GLOBAL_NUMBER_OF_USARTS> memory_;
+     * @brief Global data for all TimerSystem objects;
+     */    
+    Resource::Data data_;
 
 };
 

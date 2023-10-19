@@ -24,6 +24,7 @@ namespace cpu
 class TimerController : public NonCopyable<NoAllocator>, public api::CpuTimerController
 {
     typedef NonCopyable<NoAllocator> Parent;
+    typedef TimerSystem<TimerController> Resource;
     
 public:
 
@@ -87,12 +88,12 @@ private:
     api::CpuTimer* createResourceTimerSystem();
     
     /**
-     * @brief Initializes the allocator with heap for allocation.
+     * @brief Initializes the allocator with heap for resource allocation.
      *
-     * @param heap Heap for allocation.
+     * @param resource Heap for resource allocation.
      * @return True if initialized.
      */
-    static bool_t initialize(api::Heap* heap);
+    static bool_t initialize(api::Heap* resource);
 
     /**
      * @brief Deinitializes the allocator.
@@ -100,9 +101,9 @@ private:
     static void deinitialize();
     
     /**
-     * @brief Heap for allocation.
+     * @brief Heap for resource allocation.
      */
-    static api::Heap* heap_;
+    static api::Heap* resource_;
     
     /**
      * @brief Target CPU register model.
@@ -112,17 +113,17 @@ private:
     /**
      * @brief Global interrupt enable controller.
      */
-    api::Guard& gie_;    
-    
+    api::Guard& gie_;
+
     /**
      * @brief Resource memory allocator.
      */     
-    lib::ResourceMemory<TimerSystem<TimerController>, EOOS_CPU_GLOBAL_NUMBER_OF_SYSTEM_TIMERS> memory_;
+    lib::ResourceMemory<Resource, EOOS_CPU_GLOBAL_NUMBER_OF_SYSTEM_TIMERS> memory_;
 
     /**
      * @brief Global data for all TimerSystem objects;
      */    
-    TimerSystem<TimerController>::Data data_;
+    Resource::Data data_;
 
 };
 

@@ -64,12 +64,12 @@ public:
          */
         api::Guard& gie;
 
-    };    
+    };
 
     /**
      * @brief Constructor.
      *
-     * @param data Global data for all theses objects     
+     * @param data Global data for all theses objects.
      */
     TimerSystem(Data& data);
     

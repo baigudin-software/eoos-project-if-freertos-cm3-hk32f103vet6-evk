@@ -27,6 +27,7 @@ namespace sys
 class Scheduler : public NonCopyable<NoAllocator>, public api::Scheduler
 {
     typedef NonCopyable<NoAllocator> Parent;
+    typedef Thread<Scheduler> Resource;
 
 public:
 
@@ -107,12 +108,12 @@ private:
     static bool_t msSleep(int32_t ms);
 
     /**
-     * @brief Initializes the allocator with heap for allocation.
+     * @brief Initializes the allocator with heap for resource allocation.
      *
-     * @param heap Heap for allocation.
+     * @param resource Heap for resource allocation.
      * @return True if initialized.
      */
-    bool_t initialize(api::Heap* heap);
+    bool_t initialize(api::Heap* resource);
 
     /**
      * @brief Initializes the allocator.
@@ -123,11 +124,41 @@ private:
      * @brief Scheduler system tick in microseconds.
      */  
     static const int64_t QUANT_US = 1000;
+    
+    /**
+     * @struct ResourcePool
+     * @brief Resource memory pool.
+     */
+    struct ResourcePool
+    {
+
+    public:
+        
+        /**
+         * @brief Constructor.
+         */
+        ResourcePool();
+
+    private:
+            
+        /**
+         * @brief Mutex resource.
+         */    
+        Mutex<NoAllocator> mutex_;
+        
+    public:
+        
+        /**
+         * @brief Resource memory allocator.
+         */     
+        lib::ResourceMemory<Resource, EOOS_GLOBAL_NUMBER_OF_THREADS> memory;
+
+    };
 
     /**
-     * @brief Heap for allocation.
+     * @brief Heap for resource allocation.
      */
-    static api::Heap* heap_;
+    static api::Heap* resource_;
     
     /**
      * @brief Timer interrupt service routine.
@@ -158,16 +189,11 @@ private:
      * @brief Target CPU interrupt resource.
      */    
     api::CpuInterrupt* intSvc_;
-    
-    /**
-     * @brief Mutex resource.
-     */    
-    Mutex<NoAllocator> mutex_;
 
     /**
-     * @brief Resource memory allocator.
-     */     
-    lib::ResourceMemory<Thread<Scheduler>, EOOS_GLOBAL_NUMBER_OF_THREADS> memory_;
+     * @brief Resource memory pool.
+     */
+    ResourcePool pool_;
 
 };
 

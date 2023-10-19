@@ -20,6 +20,19 @@ namespace drv
 class Usart : public api::OutStream<char_t>
 {
 public:
+
+    /**
+     * @enum Number
+     * @brief USART numbers.
+     */
+    enum Number
+    {
+        NUMBER_USART1 = 0,
+        NUMBER_USART2,
+        NUMBER_USART3,
+        NUMBER_UART4,
+        NUMBER_UART5
+    };
     
     /** 
      * @brief Destructor.
