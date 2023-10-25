@@ -5,6 +5,7 @@
  */
 #include "drv.Usart.hpp"
 #include "drv.UsartController.hpp"
+#include "lib.UniquePointer.hpp"
 
 namespace eoos
 {
@@ -17,8 +18,26 @@ Usart* Usart::create(int32_t number)
     if( controller == NULLPTR )
     {
         controller = new UsartController;
+        if( controller == NULLPTR )
+        {
+            return NULLPTR;
+        }
+        if( !controller->isConstructed() )
+        {
+            delete controller;
+            controller = NULLPTR;
+            return NULLPTR;
+        }
     }
-    return controller->createResource(number);
+    lib::UniquePointer<Usart> res( controller->createResource(number) );
+    if( !res.isNull() )
+    {
+        if( !res->isConstructed() )
+        {
+            res.reset();
+        }
+    }
+    return res.release();
 }
 
 Usart::~Usart(){}

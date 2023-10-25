@@ -269,7 +269,7 @@ void Interrupt<A>::disable()
         {
             case EXCEPTION_SYSTICK:
             {
-                lib::Guard<A> guard(data_.gie);
+                lib::Guard<A> const guard(data_.gie);
                 // Disable SysTick exception
                 data_.reg.scs.tick->csr.bit.tickint = 0;
                 break;
@@ -295,7 +295,7 @@ void Interrupt<A>::enable()
         {
             case EXCEPTION_SYSTICK:
             {
-                lib::Guard<A> guard(data_.gie);
+                lib::Guard<A> const guard(data_.gie);
                 // Enable SysTick exception to set count to 0 changes the SysTick exception status to pending
                 data_.reg.scs.tick->csr.bit.tickint = 1;
                 break;
@@ -342,7 +342,7 @@ void Interrupt<A>::disableIrq()
     }
     int32_t const index( irq / 32 );
     {
-        lib::Guard<A> guard(data_.gie);
+        lib::Guard<A> const guard(data_.gie);
         uint32_t regValue( data_.reg.scs.nvic->icer[index].value );
         regValue |= bitValue;
         data_.reg.scs.nvic->icer[index].value = regValue;
@@ -361,7 +361,7 @@ void Interrupt<A>::enableIrq()
     }
     int32_t const index( irq / 32 );
     {
-        lib::Guard<A> guard(data_.gie);
+        lib::Guard<A> const guard(data_.gie);
         uint32_t regValue( data_.reg.scs.nvic->iser[index].value );
         regValue |= bitValue;
         data_.reg.scs.nvic->iser[index].value = regValue;
@@ -395,14 +395,14 @@ template <class A>
 void Interrupt<A>::destruct()
 {
     Interrupt<A>::disable();
-    lib::Guard<A> guard(data_.gie);
+    lib::Guard<A> const guard(data_.gie);
     data_.handlers[exception_] = NULLPTR;
 }
 
 template <class A>
 bool_t Interrupt<A>::setHandler(api::Task& handler, int32_t exception)
 {
-    lib::Guard<A> guard(data_.gie);
+    lib::Guard<A> const guard(data_.gie);
     if(exception >= EXCEPTION_LAST)
     {
         return false;

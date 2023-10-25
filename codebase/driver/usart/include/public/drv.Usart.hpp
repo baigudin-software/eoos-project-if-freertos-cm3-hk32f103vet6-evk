@@ -33,6 +33,81 @@ public:
         NUMBER_UART4,
         NUMBER_UART5
     };
+
+    /**
+     * @enum Mode
+     * @brief USART numbers.
+     */
+    enum Mode
+    {
+        MODE_RX   = 1,
+        MODE_TX   = 2,
+        MODE_TXRX = 3
+    };
+
+    /**
+     * @enum Baud
+     * @brief USART speed (rate) in Bauds.
+     */
+    enum Baud
+    {
+        BAUD_9600 = 9600
+    };
+
+    /**
+     * @enum DataBits
+     * @brief USART data bits.
+     */
+    enum DataBits
+    {
+        DATABITS_8 = 8,
+        DATABITS_9 = 9
+    };
+
+    /**
+     * @enum StopBits
+     * @brief USART stop bits.
+     */
+    enum StopBits
+    {
+        STOPBITS_1 = 1,
+        STOPBITS_2 = 2
+    };
+    
+    /**
+     * @enum Parity
+     * @brief USART parity.
+     */
+    enum Parity
+    {
+        PARITY_NONE = 0,
+        PARITY_ODD  = 1,
+        PARITY_EVEN = 2,        
+    };
+
+    /**
+     * @enum FlowControl
+     * @brief USART flow control.
+     */
+    enum FlowControl
+    {
+        FLOWCONTROL_NONE = 0,
+    };
+
+    /**
+     * @struct SerialLineConfig
+     * @brief Configure USART as Serial Line.
+     */    
+    struct SerialLineConfig
+    {
+        Number      number;
+        Mode        mode;
+        Baud        speed;
+        DataBits    dataBits;
+        StopBits    stopBits;
+        Parity      parity;
+        FlowControl flowControl;
+    };
     
     /** 
      * @brief Destructor.

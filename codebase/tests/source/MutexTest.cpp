@@ -57,7 +57,7 @@ private:
     virtual void start()
     {
         {
-            lib::Guard<> guard(mutex_);
+            lib::Guard<> const guard(mutex_);
             volatile int64_t resource( resource_ );
             for(int32_t i(0); i<=MAX_COUNT; i++)
             {
@@ -119,7 +119,7 @@ private:
     virtual void start()
     {
         {
-            lib::Guard<> guard(mutex_);
+            lib::Guard<> const guard(mutex_);
             volatile int64_t resource( resource_ );
             for(int32_t i(MAX_COUNT); i>=0; i--)
             {

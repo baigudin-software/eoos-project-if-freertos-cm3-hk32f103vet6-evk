@@ -54,7 +54,7 @@ struct Registers
     reg::Flash* flash;
 
     /**
-     * @brief System Control Space
+     * @brief System Control Space.
      * 0xE000E000 - 0xE000EFFF
      */
     struct Scs

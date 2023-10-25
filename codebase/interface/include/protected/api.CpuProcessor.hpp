@@ -91,4 +91,4 @@ inline CpuProcessor::~CpuProcessor() {}
     
 } // namespace api
 } // namespace eoos
-#endif // API_CPU_HPP_
+#endif // API_CPUPROCESSOR_HPP_

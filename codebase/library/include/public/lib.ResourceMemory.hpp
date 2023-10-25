@@ -116,7 +116,7 @@ void* ResourceMemory<T,N>::allocate(size_t size, void* ptr)
 {
     if( isConstructed() )
     {
-        lib::Guard<NoAllocator> guard( guard_ );
+        lib::Guard<NoAllocator> const guard( guard_ );
         if( size != sizeof(T) )
         {
             return NULLPTR;
@@ -145,7 +145,7 @@ void ResourceMemory<T,N>::free(void* ptr)
 {
     if( isConstructed() )
     {
-        lib::Guard<NoAllocator> guard( guard_ );
+        lib::Guard<NoAllocator> const guard( guard_ );
         for(int32_t i(0); i<N; i++)
         {
             if( memory_[i] == ptr )

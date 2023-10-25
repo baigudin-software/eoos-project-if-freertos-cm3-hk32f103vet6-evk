@@ -164,7 +164,7 @@ bool_t TimerSystem<A>::setPeriod(int64_t us)
     {
         return false;
     }
-    lib::Guard<A> guard(data_.gie);
+    lib::Guard<A> const guard(data_.gie);
     // System Tick (SysTick) Calibration Value Register
     // The system tick calibration value is fixed at 9000, 
     // and when the system tick clock is set to 9 MHz (HCLK/8 and HCLK=72 MHz), 
@@ -184,7 +184,7 @@ void TimerSystem<A>::start()
 {
     if( isConstructed() )
     {
-        lib::Guard<A> guard(data_.gie);
+        lib::Guard<A> const guard(data_.gie);
         data_.reg.scs.tick->csr.bit.enable = 1;
     }
 }
@@ -194,7 +194,7 @@ void TimerSystem<A>::stop()
 {
     if( isConstructed() )
     {
-        lib::Guard<A> guard(data_.gie);
+        lib::Guard<A> const guard(data_.gie);
         data_.reg.scs.tick->csr.bit.enable = 0;
     }
 }
@@ -224,7 +224,7 @@ bool_t TimerSystem<A>::initialize()
     bool_t res( false );
     do 
     {
-        lib::Guard<A> guard(data_.gie);
+        lib::Guard<A> const guard(data_.gie);
         // Test if the timer resource is not occupied
         //
         // @todo Avoid checking the enable bit, as the timer might be stopped
@@ -251,7 +251,7 @@ bool_t TimerSystem<A>::initialize()
 template <class A>
 void TimerSystem<A>::deinitialize()
 {
-    lib::Guard<A> guard(data_.gie);
+    lib::Guard<A> const guard(data_.gie);
     data_.reg.scs.tick->csr.bit.enable = 0;
 }
 

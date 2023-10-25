@@ -39,7 +39,7 @@ protected:
 
 };
 
-inline Supervisor::~Supervisor(){}
+inline Supervisor::~Supervisor() {}
 
 } // namespace api
 } // namespace eoos

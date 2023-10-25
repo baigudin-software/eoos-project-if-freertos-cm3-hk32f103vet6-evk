@@ -26,7 +26,7 @@ UsartController::UsartController()
     : lib::NonCopyable<lib::NoAllocator>()
     , reg_()
     , pool_()
-    , data_( reg_, sys::Svc::get() ) {        
+    , data_( reg_, sys::Svc::get() ) {     
     bool_t const isConstructed( construct() );
     setConstructed( isConstructed );
 }
@@ -41,7 +41,7 @@ bool_t UsartController::isConstructed() const
     return Parent::isConstructed();
 }
 
-UsartController::Resource* UsartController::createResource(int32_t number)
+Usart* UsartController::createResource(int32_t number)
 {
     Resource* ptr( NULLPTR );
     if( isConstructed() )

@@ -54,7 +54,7 @@ public:
      * @param number Number of the resource.
      * @return A new resource, or NULL if an error has been occurred.
      */      
-    Resource* createResource(int32_t number);
+    Usart* createResource(int32_t number);
     
     /**
      * @brief Allocates memory.
@@ -125,7 +125,7 @@ private:
     private:
             
         /**
-         * @brief Mutex resource.
+         * @brief Mutex memory resource.
          */    
         lib::Mutex<lib::NoAllocator> mutex_;
     
