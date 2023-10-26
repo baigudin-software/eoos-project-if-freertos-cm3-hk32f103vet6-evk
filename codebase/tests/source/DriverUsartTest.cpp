@@ -14,7 +14,7 @@ namespace eoos
 void testDriverUsart()
 {
     drv::Usart* uart( drv::Usart::create(drv::Usart::NUMBER_USART1) );
-    *uart << "Hello, World!" << "\n";
+    *uart << "Hello, World!" << "\r\n";
     delete uart;
 }
 

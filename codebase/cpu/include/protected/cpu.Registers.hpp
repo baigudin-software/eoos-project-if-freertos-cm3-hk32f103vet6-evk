@@ -7,6 +7,7 @@
 #define CPU_REGISTERS_HPP_
 
 #include "cpu.reg.Usart.hpp"
+#include "cpu.reg.Gpio.hpp"
 #include "cpu.reg.Rcc.hpp"
 #include "cpu.reg.Flash.hpp"
 #include "cpu.reg.Auxiliary.hpp"
@@ -29,6 +30,24 @@ struct Registers
      * @brief Constructor.
      */    
     Registers();
+    
+    /**
+     * @brief Index USART.
+     */    
+    static const int32_t INDEX_USART1 = 0;
+    static const int32_t INDEX_USART2 = 1;
+    static const int32_t INDEX_USART3 = 2;
+    static const int32_t INDEX_UART4  = 3;
+    static const int32_t INDEX_UART5  = 4;
+    
+    /**
+     * @brief Index GPIO.
+     */    
+    static const int32_t INDEX_GPIOA = 0;
+    static const int32_t INDEX_GPIOB = 1;
+    static const int32_t INDEX_GPIOC = 2;
+    static const int32_t INDEX_GPIOD = 3;
+    static const int32_t INDEX_GPIOE = 4;    
 
     /**
      * @brief Universal Synchronous Asynchronous Transceiver (USART).
@@ -40,6 +59,17 @@ struct Registers
      * UART5 : 0x40005000 - 0x400053FF;
      */
     reg::Usart* usart[5];
+    
+    /**
+     * @brief General-purpose Input Output (GPIO).
+     *
+     * GPIOA: 0x40010800 - 0x40010BFF;
+     * GPIOB: 0x40010C00 - 0X40010FFF;
+     * GPIOC: 0x40011000 - 0x400113FF;
+     * GPIOD: 0x40011400 - 0x400117FF;
+     * GPIOE: 0x40011800 - 0x40011BFF;
+     */
+    reg::Gpio* gpio[5];
 
     /**
      * @brief Reset and Clock Control.
