@@ -12,7 +12,7 @@ namespace eoos
 namespace drv
 {
     
-Usart* Usart::create(int32_t number)
+Usart* Usart::create(SerialLineConfig const& config)
 {
     static UsartController* controller( NULLPTR );    
     if( controller == NULLPTR )
@@ -29,7 +29,7 @@ Usart* Usart::create(int32_t number)
             return NULLPTR;
         }
     }
-    lib::UniquePointer<Usart> res( controller->createResource(number) );
+    lib::UniquePointer<Usart> res( controller->createResource(config) );
     if( !res.isNull() )
     {
         if( !res->isConstructed() )

@@ -51,10 +51,10 @@ public:
     /**
      * @brief Creates a new HW interrupt resource.
      *
-     * @param number Number of the resource.
+     * @param config Configuration of USART or UART.
      * @return A new resource, or NULL if an error has been occurred.
      */      
-    Usart* createResource(int32_t number);
+    Usart* createResource(Usart::SerialLineConfig const& config);
     
     /**
      * @brief Allocates memory.

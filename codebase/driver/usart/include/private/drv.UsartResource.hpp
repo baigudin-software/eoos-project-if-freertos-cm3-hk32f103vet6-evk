@@ -66,10 +66,10 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param data Global data for all theses objects.     
+     * @param config Configuration of USART or UART.
      * @param number Number of USART or UART.
      */
-    UsartResource(Data& data, int32_t number);
+    UsartResource(Data& data, SerialLineConfig const& config);
     
     /** 
      * @brief Destructor.
@@ -186,16 +186,16 @@ private:
      * @brief Global data for all these objects;
      */
     Data& data_;
-    
+        
     /**
-     * @brief Number of USART or UART.
+     * @brief Configuration of USART.
      */
-    int32_t number_;
+    SerialLineConfig config_;    
     
     /**
      * @brief USART or UART registers.
      */
-    cpu::reg::Usart* usart_;
+    cpu::reg::Usart* reg_;
 
     /**
      * @brief This resource mutex.
@@ -205,11 +205,11 @@ private:
 };
 
 template <class A>
-UsartResource<A>::UsartResource(Data& data, int32_t number)
+UsartResource<A>::UsartResource(Data& data, SerialLineConfig const& config)
     : lib::NonCopyable<A>()
     , data_( data )
-    , number_( number )
-    , usart_( data_.reg.usart[number_] )
+    , config_( config )
+    , reg_( data_.reg.usart[config_.number] )
     , mutex_() {
     bool_t const isConstructed( construct() );
     setConstructed( isConstructed );
@@ -236,9 +236,9 @@ api::OutStream<char_t>& UsartResource<A>::operator<<(char_t const* source)
         volatile uint32_t txe( 0 );
         do 
         {
-            txe = usart_->sr.bit.txe;
+            txe = reg_->sr.bit.txe;
         } while( txe == 0 );
-        usart_->dr.bit.dr = *source;
+        reg_->dr.bit.dr = *source;
         source++;
     }
     return *this;
@@ -282,7 +282,7 @@ bool_t UsartResource<A>::construct()
 template<class A>
 bool_t UsartResource<A>::isNumberValid()
 {
-    return ( NUMBER_USART1 <= number_ && number_ <= NUMBER_UART5 );
+    return ( NUMBER_USART1 <= config_.number && config_.number <= NUMBER_UART5 );
 }
 
 template <class A>
@@ -293,7 +293,7 @@ bool_t UsartResource<A>::initialize()
     {
         lib::Guard<A> const guard(data_.mutex);
         // Test USART does not enable
-        if( usart_->cr1.bit.ue == 1 )
+        if( reg_->cr1.bit.ue == 1 )
         {
             break;
         }
@@ -316,36 +316,82 @@ bool_t UsartResource<A>::initialize()
 template <class A>
 void UsartResource<A>::configurePort()
 {
-    switch( number_ )
+    switch( config_.number )
     {
         case NUMBER_USART1:
         {
-            data_.reg.rcc->apb2enr.bit.iopaen = 1; // IO port A clock enabled          
+            data_.reg.rcc->apb2enr.bit.iopaen = 1; // IO port A clock enabled
             int32_t const index( cpu::Registers::INDEX_GPIOA );            
             cpu::reg::Gpio::Crh crh( data_.reg.gpio[index]->crh.value );
             // USART1_TX port PA9
             crh.bit.cnf9 = 2;       // Multiplexed function push-pull output mode
             crh.bit.mode9 = 2;      // Output mode, maximum speed 2 MHz
             // USART1_RX port PA10
-            crh.bit.cnf10 = 1;      // 01: Floating input mode (state after reset)
+            crh.bit.cnf10 = 1;      // Floating input mode (state after reset)
             crh.bit.mode10 = 0;     // Input mode (state after reset)
             data_.reg.gpio[index]->crh.value = crh.value;
             break;
         }
         case NUMBER_USART2:
         {
+            data_.reg.rcc->apb2enr.bit.iopaen = 1; // IO port A clock enabled
+            int32_t const index( cpu::Registers::INDEX_GPIOA );            
+            cpu::reg::Gpio::Crl crl( data_.reg.gpio[index]->crl.value );
+            // USART1_TX port PA0
+            crl.bit.cnf0 = 2;       // Multiplexed function push-pull output mode
+            crl.bit.mode0 = 2;      // Output mode, maximum speed 2 MHz
+            // USART1_RX port PA1
+            crl.bit.cnf1 = 1;       // Floating input mode (state after reset)
+            crl.bit.mode1 = 0;      // Input mode (state after reset)
+            data_.reg.gpio[index]->crl.value = crl.value;
             break;
         }
         case NUMBER_USART3:
         {
+            data_.reg.rcc->apb2enr.bit.iopben = 1; // IO port B clock enabled
+            int32_t const index( cpu::Registers::INDEX_GPIOB );            
+            cpu::reg::Gpio::Crh crh( data_.reg.gpio[index]->crh.value );
+            // USART1_TX port PB10
+            crh.bit.cnf10 = 2;       // Multiplexed function push-pull output mode
+            crh.bit.mode10 = 2;      // Output mode, maximum speed 2 MHz
+            // USART1_RX port PB11
+            crh.bit.cnf11 = 1;       // Floating input mode (state after reset)
+            crh.bit.mode11 = 0;      // Input mode (state after reset)
+            data_.reg.gpio[index]->crh.value = crh.value;            
             break;
         }
         case NUMBER_UART4:
         {
+            data_.reg.rcc->apb2enr.bit.iopcen = 1; // IO port B clock enabled
+            int32_t const index( cpu::Registers::INDEX_GPIOC );            
+            cpu::reg::Gpio::Crh crh( data_.reg.gpio[index]->crh.value );
+            // USART1_TX port PC10
+            crh.bit.cnf10 = 2;       // Multiplexed function push-pull output mode
+            crh.bit.mode10 = 2;      // Output mode, maximum speed 2 MHz
+            // USART1_RX port PC11
+            crh.bit.cnf11 = 1;       // Floating input mode (state after reset)
+            crh.bit.mode11 = 0;      // Input mode (state after reset)
+            data_.reg.gpio[index]->crh.value = crh.value;            
             break;
         }
         case NUMBER_UART5:
         {
+            data_.reg.rcc->apb2enr.bit.iopcen = 1; // IO port B clock enabled
+            int32_t index( cpu::Registers::INDEX_GPIOC );   
+            cpu::reg::Gpio::Crh crh( data_.reg.gpio[index]->crh.value );
+            // USART1_TX port PC12
+            crh.bit.cnf12 = 2;       // Multiplexed function push-pull output mode
+            crh.bit.mode12 = 2;      // Output mode, maximum speed 2 MHz
+            data_.reg.gpio[index]->crh.value = crh.value;
+            
+            data_.reg.rcc->apb2enr.bit.iopden = 1; // IO port B clock enabled
+            index = cpu::Registers::INDEX_GPIOD;
+            cpu::reg::Gpio::Crl crl( data_.reg.gpio[index]->crl.value );
+            // USART1_RX port PD2
+            crl.bit.cnf2 = 1;       // Floating input mode (state after reset)
+            crl.bit.mode2 = 0;      // Input mode (state after reset)
+            data_.reg.gpio[index]->crl.value = crl.value;
+
             break;
         }
         default:
@@ -359,7 +405,7 @@ template <class A>
 void UsartResource<A>::enableClock(bool_t enable)
 {
     uint32_t en = (enable) ? 1 : 0;
-    switch( number_ )
+    switch( config_.number )
     {
         case NUMBER_USART1:
         {
@@ -397,24 +443,44 @@ template <class A>
 void UsartResource<A>::enablePort(bool_t enable)
 {
     uint32_t ue = (enable) ? 1 : 0;
-    usart_->cr1.bit.ue = ue; // Set USART enable
+    reg_->cr1.bit.ue = ue; // Set USART enable
 }
-
 
 template <class A>
 void UsartResource<A>::setClock()
 {
-    usart_->cr2.bit.clken = 0; // Set Clock enable to CK pin disabled
-    usart_->cr2.bit.cpol = 0;  // Set Clock polarity to held low on the CK pin when the bus is idle
-    usart_->cr2.bit.cpha = 0;  // Set Clock phase to Data capture at the first edge of the clock
-    usart_->cr2.bit.lbcl = 0;  // Set Last bit clock pulse Clock pulse for the last bit of data is not output from CK
+    reg_->cr2.bit.clken = 0; // Set Clock enable to CK pin disabled
+    reg_->cr2.bit.cpol = 0;  // Set Clock polarity to held low on the CK pin when the bus is idle
+    reg_->cr2.bit.cpha = 0;  // Set Clock phase to Data capture at the first edge of the clock
+    reg_->cr2.bit.lbcl = 0;  // Set Last bit clock pulse Clock pulse for the last bit of data is not output from CK
 }
 
 template <class A>
 void UsartResource<A>::setMode()
 {
-    usart_->cr1.bit.te = 1; // Set Transmitter enable
-    usart_->cr1.bit.re = 1; // Set Receiver enable
+    switch( config_.mode )
+    {
+        case MODE_TX:
+        {
+            reg_->cr1.bit.te = 1; // Set Transmitter enable
+            break;
+        }
+        case MODE_RX:
+        {
+            reg_->cr1.bit.re = 1; // Set Receiver enable            
+            break;
+        }
+        case MODE_TXRX:
+        {
+            reg_->cr1.bit.te = 1; // Set Transmitter enable
+            reg_->cr1.bit.re = 1; // Set Receiver enable
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
 }
 
 template <class A>
@@ -431,9 +497,9 @@ void UsartResource<A>::setBaudSpeed()
         return;
     }
     // @todo Check divs to calculate the frequencies
-    uint32_t pclk( (number_ == NUMBER_USART1) ? sysclk : sysclk / 2 );
+    uint32_t pclk( (config_.number == NUMBER_USART1) ? sysclk : sysclk / 2 );
     // Determine the integer part
-    uint32_t baudrate( 9600 );
+    uint32_t baudrate( config_.baud );
     uint32_t integerdivider( (25 * pclk) / (4 * baudrate) );
     uint32_t value( (integerdivider / 100) << 4 );        
     // Determine the fractional part
@@ -441,40 +507,97 @@ void UsartResource<A>::setBaudSpeed()
     // Implement the fractional part in the register
     value |= (((fractionaldivider * 16) + 50) / 100) & 0x0000000F;
     // Write to BRR register
-    usart_->brr.value = value;
+    reg_->brr.value = value;
 }
 
 template <class A>
 void UsartResource<A>::setDataBits()
 {
-    usart_->cr1.bit.m = 0; // Set 8 bit word length
+    switch( config_.dataBits )
+    {
+        case DATABITS_8:
+        {
+            reg_->cr1.bit.m = 0; // Set 8 bit word length
+            break;
+        }
+        case DATABITS_9:
+        {
+            reg_->cr1.bit.m = 1; // Set 9 bit word length
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
 }
 
 template <class A>
 void UsartResource<A>::setStopBits()
 {
-    usart_->cr2.bit.stop = 0; // Set 1 stop bit    
+    switch( config_.stopBits )
+    {
+        case STOPBITS_1:
+        {
+            reg_->cr2.bit.stop = 0; // Set 1 stop bit
+            break;
+        }
+        case STOPBITS_2:
+        {
+            reg_->cr2.bit.stop = 2; // Set 2 stop bit
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
 }
 
 template <class A>
 void UsartResource<A>::setParity()
 {
-    usart_->cr1.bit.pce = 0; // Set Parity control enable to Disable checksum control
-    usart_->cr1.bit.ps = 0;  // Set Parity selection to Even check [no action with PCE equals to 0]
+    switch( config_.parity )
+    {
+        case PARITY_NONE:
+        {
+            reg_->cr1.bit.pce = 0; // Set Parity control enable to Disable checksum control
+            break;
+        }
+        case PARITY_ODD:
+        {
+            reg_->cr1.bit.pce = 1; // Set Parity control enable to Enable checksum control
+            reg_->cr1.bit.ps = 1;  // Set Parity selection to Odd check
+            break;
+        }
+        case PARITY_EVEN:
+        {
+            reg_->cr1.bit.pce = 1; // Set Parity control enable to Enable checksum control
+            reg_->cr1.bit.ps = 0;  // Set Parity selection to Even check
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }    
 }
 
 template <class A>
 void UsartResource<A>::setFlowControl()
 {
-    usart_->cr3.bit.rtse = 0;  // Set RTS enable to Disable RTS hardware flow control
-    usart_->cr3.bit.ctse = 0;  // Set CTS enable to Disable CTS hardware flow control        
+    if( config_.flowControl == FLOWCONTROL_NONE )
+    {
+        reg_->cr3.bit.rtse = 0;  // Set RTS enable to Disable RTS hardware flow control
+        reg_->cr3.bit.ctse = 0;  // Set CTS enable to Disable CTS hardware flow control
+    }
 }
 
 template <class A>
 void UsartResource<A>::deinitialize()
 {
     lib::Guard<A> const guard(data_.mutex);
-    switch( number_ )
+    switch( config_.number )
     {
         case NUMBER_USART1:
         {

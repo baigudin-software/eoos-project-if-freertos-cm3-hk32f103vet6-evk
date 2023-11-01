@@ -40,8 +40,8 @@ public:
      */
     enum Mode
     {
-        MODE_RX   = 1,
-        MODE_TX   = 2,
+        MODE_TX   = 1,
+        MODE_RX   = 2,
         MODE_TXRX = 3
     };
 
@@ -51,7 +51,11 @@ public:
      */
     enum Baud
     {
-        BAUD_9600 = 9600
+        BAUD_2400   = 2400,
+        BAUD_9600   = 9600,
+        BAUD_19200  = 19200,
+        BAUD_57600  = 57600,
+        BAUD_115200 = 115200
     };
 
     /**
@@ -102,7 +106,7 @@ public:
     {
         Number      number;
         Mode        mode;
-        Baud        speed;
+        Baud        baud;
         DataBits    dataBits;
         StopBits    stopBits;
         Parity      parity;
@@ -117,10 +121,10 @@ public:
     /**
      * @brief Create the driver resource.
      *
-     * @param number Number of USART or UART.
+     * @param config Configuration of USART or UART.
      * @return A new driver resource, or NULLPTR if an error has been occurred.
      */
-    static Usart* create(int32_t number);
+    static Usart* create(SerialLineConfig const& config);
 
 };
 

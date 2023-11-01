@@ -41,12 +41,12 @@ bool_t UsartController::isConstructed() const
     return Parent::isConstructed();
 }
 
-Usart* UsartController::createResource(int32_t number)
+Usart* UsartController::createResource(Usart::SerialLineConfig const& config)
 {
     Resource* ptr( NULLPTR );
     if( isConstructed() )
     {
-        lib::UniquePointer<Resource> res( new Resource(data_, number) );
+        lib::UniquePointer<Resource> res( new Resource(data_, config) );
         if( !res.isNull() )
         {
             if( !res->isConstructed() )
