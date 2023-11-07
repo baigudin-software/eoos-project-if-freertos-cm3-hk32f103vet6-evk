@@ -1,16 +1,16 @@
 /**
- * @file      port.cpp
+ * @file      port.Kernel.cpp
  * @brief     Universal EOOS port of FreeRTOS Kernel V10.5.1 (V202212.01)
  * @author    Sergey Baigudin, sergey@baigudin.software
  * @copyright 2023, Sergey Baigudin, Baigudin Software
  */
-#include "port.hpp"
+#include "port.Kernel.hpp"
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include "lib.Guard.hpp"
-
 namespace eoos
+{
+namespace port
 {
 
 /**
@@ -34,7 +34,7 @@ static bool_t wasEnabledOnZero_( false );
 static void prvPortStopExecution()
 {
     portDISABLE_INTERRUPTS();
-    while(1){}
+    while(true){}
 }
 
 /**
@@ -240,14 +240,20 @@ extern "C" void vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskN
     prvPortStopExecution();
 }
 
-void Kernel::initialize(api::Supervisor& eoos)
+Kernel::Kernel(api::CpuProcessor& cpu)
+    : lib::NonCopyable<lib::NoAllocator>() {     
+    bool_t const isConstructed( construct(cpu) );
+    setConstructed( isConstructed );
+}
+
+Kernel::~Kernel()
 {
-    pxProcessor_ = &eoos.getProcessor();
+    pxProcessor_ = NULLPTR;
 }
 
 void Kernel::execute()
 {
-    if( pxProcessor_ != NULLPTR )
+    if( isConstructed() )
     {
         vTaskStartScheduler();
     }
@@ -259,4 +265,28 @@ void Kernel::execute()
     prvPortStopExecution();
 }
 
+bool_t Kernel::construct(api::CpuProcessor& cpu)
+{
+    bool_t res( false );
+    do 
+    {
+        if( !isConstructed() )
+        {
+            break;
+        }
+        if( !cpu.isConstructed() )
+        {
+            break;
+        }
+        if( pxProcessor_ != NULLPTR )
+        {
+            break;
+        }
+        pxProcessor_ = &cpu;
+        res = true;
+    } while(false);
+    return res;
+}
+
+} // namespace port
 } // namespace eoos

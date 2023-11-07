@@ -42,6 +42,30 @@ public:
      */
     virtual OutStream<char_t>& getCerr() = 0;    
 
+    /**
+     * @brief Sets a new system output character stream.
+     *
+     * @return True if the system output character stream is set.
+     */
+    virtual bool_t setCout(OutStream<char_t>& cout) = 0;
+
+    /**
+     * @brief Sets a new system error output character stream.
+     *
+     * @return True if the system error output character stream is set.     
+     */
+    virtual bool_t setCerr(OutStream<char_t>& cerr) = 0;
+
+    /**
+     * @brief Resets the system output character stream to default.
+     */
+    virtual void resetCout() = 0;
+
+    /**
+     * @brief Resets the system error output character stream to default.
+     */
+    virtual void resetCerr() = 0;
+
 };
 
 inline StreamManager::~StreamManager() {}

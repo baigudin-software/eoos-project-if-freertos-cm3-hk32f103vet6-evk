@@ -115,7 +115,7 @@ private:
         /**
          * @brief Semaphore memory allocator.
          */     
-        lib::ResourceMemory<Resource, EOOS_GLOBAL_NUMBER_OF_SEMAPHORES> memory;
+        lib::ResourceMemory<Resource, EOOS_GLOBAL_SYS_NUMBER_OF_SEMAPHORES> memory;
 
     };    
 

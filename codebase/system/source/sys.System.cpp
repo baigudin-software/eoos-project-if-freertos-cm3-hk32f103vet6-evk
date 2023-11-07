@@ -5,6 +5,7 @@
  */
 #include "sys.System.hpp"
 #include "sys.ThreadPrimary.hpp"
+#include "pcb.Board.hpp"
 
 namespace eoos
 {
@@ -35,7 +36,8 @@ System::System()
     , scheduler_(cpu_)
     , mutexManager_()
     , semaphoreManager_()    
-    , streamManager_() {
+    , streamManager_()
+    , kernel_(cpu_) {
     bool_t const isConstructed( construct() );
     setConstructed( isConstructed );
 }    
@@ -102,23 +104,6 @@ api::CpuProcessor& System::getProcessor()
         exit(ERROR_SYSCALL_CALLED);
     }
     return cpu_;
-}
-
-int32_t System::execute(int32_t argc, char_t* argv[])
-{
-    int32_t error( ERROR_SYSTEM_ABORT );
-    if( isConstructed() )
-    {   
-        Kernel::initialize(*eoos_);        
-        ThreadPrimary thread(scheduler_, argc, argv);
-        if( thread.execute() )
-        {
-            Kernel::execute();
-            thread.join();
-        }
-        error = thread.getError();
-    }
-    return error;
 }
 
 int32_t System::run()
@@ -189,17 +174,40 @@ bool_t System::construct()
         {   ///< UT Justified Branch: HW dependency
             break;
         }        
+        if( !kernel_.isConstructed() )
+        {   ///< UT Justified Branch: HW dependency
+            break;
+        }        
         eoos_ = this;
         res = true;
     } while(false);    
     return res;
 }
 
+int32_t System::execute(int32_t argc, char_t* argv[])
+{
+    int32_t error( ERROR_SYSTEM_ABORT );
+    if( isConstructed() )
+    {   
+        pcb::Board board;
+        if( board.isConstructed() )
+        {
+            ThreadPrimary thread(scheduler_, argc, argv);
+            if( thread.execute() )
+            {
+                kernel_.execute();
+                // No extit here, thus no thread join needed for FreeRTOS
+            }
+            error = thread.getError();
+        }
+    }
+    return error;
+}
+
 void System::exit(Error error)
 {
-//TODO    ::exit( static_cast<int_t>(error) ); ///< SCA MISRA-C++:2008 Justified Rule 18-0-3
-    // This code must NOT be executed
-    while( true ) {}
+    portDISABLE_INTERRUPTS();
+    while( true ){}
 }
 
 uint32_t System::getCheckValue()
@@ -242,7 +250,7 @@ void* System::operator new(size_t size)
     void* memory( NULLPTR );
     if( size == sizeof(System) && eoos_ == NULLPTR )
     {
-        memory = reinterpret_cast<void*>(memory_);
+        memory = memory_;
     }
     return memory;
 }

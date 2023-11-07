@@ -12,27 +12,27 @@
  * @brief Define number of static allocated resources.
  * 
  * @note
- *  - If EOOS_DRV_GLOBAL_NUMBER_OF_<resource_name> does not equal zero and EOOS_GLOBAL_ENABLE_NO_HEAP is any,
+ *  - If EOOS_GLOBAL_DRV_NUMBER_OF_<resource_name> does not equal zero and EOOS_GLOBAL_ENABLE_NO_HEAP is any,
  *    the resource will be allocated in pre-allocated pool memory.
- *  - If EOOS_DRV_GLOBAL_NUMBER_OF_<resource_name> equals zero and EOOS_GLOBAL_ENABLE_NO_HEAP is not defined, 
+ *  - If EOOS_GLOBAL_DRV_NUMBER_OF_<resource_name> equals zero and EOOS_GLOBAL_ENABLE_NO_HEAP is not defined, 
  *    the resource will be allocated in heap memory.
- *  - If EOOS_DRV_GLOBAL_NUMBER_OF_<resource_name> equals zero and EOOS_GLOBAL_ENABLE_NO_HEAP is defined, 
+ *  - If EOOS_GLOBAL_DRV_NUMBER_OF_<resource_name> equals zero and EOOS_GLOBAL_ENABLE_NO_HEAP is defined, 
  *    the resource will NOT be allocated.
- *  - EOOS_DRV_GLOBAL_NUMBER_OF_<resource_name> less then zero is prohibbited.
+ *  - EOOS_GLOBAL_DRV_NUMBER_OF_<resource_name> less then zero is prohibbited.
  * 
  * @note 
  *  To comply MISRA-C++:2008 in Rule 18–4–1:
- *  - EOOS_DRV_GLOBAL_NUMBER_OF_<resource_name> must not equal zero
+ *  - EOOS_GLOBAL_DRV_NUMBER_OF_<resource_name> must not equal zero
  *  - EOOS_GLOBAL_ENABLE_NO_HEAP must be defined.
  *
  * @note 
- * 	The EOOS_DRV_GLOBAL_NUMBER_OF_<resource_name> shall be passed to the project build system through compile definition.
+ * 	The EOOS_GLOBAL_DRV_NUMBER_OF_<resource_name> shall be passed to the project build system through compile definition.
  */
-#ifndef EOOS_DRV_GLOBAL_NUMBER_OF_USARTS
+#ifndef EOOS_GLOBAL_DRV_NUMBER_OF_USARTS
     /**
      * @brief Number of USART driver resources that must be form 1 to 5.
      */
-    #define EOOS_DRV_GLOBAL_NUMBER_OF_USARTS (1)
+    #define EOOS_GLOBAL_DRV_NUMBER_OF_USARTS (1)
 #endif
 
 /**

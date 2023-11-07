@@ -29,10 +29,6 @@ bool_t OutStream::isConstructed() const
 
 api::OutStream<char_t>& OutStream::operator<<(char_t const* source)
 {
-    if( isConstructed() )
-    {
-        // @todo
-    }
     return *this;
 }
 
@@ -44,10 +40,6 @@ api::OutStream<char_t>& OutStream::operator<<(int32_t value)
 
 api::OutStream<char_t>& OutStream::flush()
 {
-    if( isConstructed() )
-    {
-        // @todo
-    }
     return *this;
 }
 
@@ -60,8 +52,7 @@ bool_t OutStream::construct(Type type)
         {   ///< UT Justified Branch: HW dependency
             break;
         }
-        // @todo
-        res = false;
+        res = true;
         break;
     }
     return res;

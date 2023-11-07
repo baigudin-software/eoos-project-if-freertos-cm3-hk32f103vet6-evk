@@ -138,7 +138,7 @@ private:
     /**
      * @brief Resource memory allocator.
      */     
-    lib::ResourceMemory<Resource, EOOS_CPU_GLOBAL_NUMBER_OF_INTERRUPTS> memory_;
+    lib::ResourceMemory<Resource, EOOS_GLOBAL_CPU_NUMBER_OF_INTERRUPTS> memory_;
     
     /**
      * @brief Global data for all Interrupt objects;

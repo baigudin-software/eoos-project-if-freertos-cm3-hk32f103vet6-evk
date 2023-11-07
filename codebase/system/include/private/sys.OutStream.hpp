@@ -16,7 +16,7 @@ namespace sys
 
 /**
  * @class OutStream.
- * @brief OutStream class.
+ * @brief Default system output stream.
  */
 class OutStream : public NonCopyable<NoAllocator>, public api::OutStream<char_t>
 {

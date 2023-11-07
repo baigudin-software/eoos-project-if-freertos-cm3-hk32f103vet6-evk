@@ -32,9 +32,6 @@ public:
 
     /**
      * @brief Constructor.
-     *
-     * @param reg Target CPU register model.
-     * @param gie Global interrupt enable controller.
      */
     UsartController();
 
@@ -134,7 +131,7 @@ private:
         /**
          * @brief Resource memory allocator.
          */
-        lib::ResourceMemory<Resource, EOOS_DRV_GLOBAL_NUMBER_OF_USARTS> memory;
+        lib::ResourceMemory<Resource, EOOS_GLOBAL_DRV_NUMBER_OF_USARTS> memory;
 
     };    
     

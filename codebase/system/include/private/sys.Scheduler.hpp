@@ -151,7 +151,7 @@ private:
         /**
          * @brief Resource memory allocator.
          */     
-        lib::ResourceMemory<Resource, EOOS_GLOBAL_NUMBER_OF_THREADS> memory;
+        lib::ResourceMemory<Resource, EOOS_GLOBAL_SYS_NUMBER_OF_THREADS> memory;
 
     };
 

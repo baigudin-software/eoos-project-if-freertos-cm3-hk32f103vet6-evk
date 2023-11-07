@@ -118,7 +118,7 @@ private:
     /**
      * @brief Resource memory allocator.
      */     
-    lib::ResourceMemory<Resource, EOOS_CPU_GLOBAL_NUMBER_OF_SYSTEM_TIMERS> memory_;
+    lib::ResourceMemory<Resource, EOOS_GLOBAL_CPU_NUMBER_OF_SYSTEM_TIMERS> memory_;
 
     /**
      * @brief Global data for all TimerSystem objects;

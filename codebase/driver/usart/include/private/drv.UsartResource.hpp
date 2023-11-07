@@ -13,6 +13,7 @@
 #include "lib.NoAllocator.hpp"
 #include "lib.Mutex.hpp"
 #include "lib.Guard.hpp"
+#include "lib.BaseString.hpp"
 
 namespace eoos
 {
@@ -247,7 +248,8 @@ api::OutStream<char_t>& UsartResource<A>::operator<<(char_t const* source)
 template <class A>
 api::OutStream<char_t>& UsartResource<A>::operator<<(int32_t value)
 {
-    return *this;    
+    lib::BaseString<char_t,16,lib::CharTrait<char_t>,A> str(value);
+    return this->operator<<( str.getChar() );
 }
 
 template <class A>

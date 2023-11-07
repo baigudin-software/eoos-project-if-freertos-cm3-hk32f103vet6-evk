@@ -41,7 +41,7 @@ api::CpuTimer* TimerController::createResource(int32_t index)
     {
         // @todo Test if the System Timer is already created.
         // By now this promlem is solved only by defining 
-        // EOOS_CPU_GLOBAL_NUMBER_OF_SYSTEM_TIMERS to 1.
+        // EOOS_GLOBAL_CPU_NUMBER_OF_SYSTEM_TIMERS to 1.
         res = createResourceTimerSystem();
     }
     return res;

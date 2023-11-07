@@ -250,6 +250,11 @@ private:
      * @brief The stream sub-system manager.
      */
     StreamManager streamManager_;
+    
+    /**
+     * @brief The FreeRTOS kernel port.
+     */
+    port::Kernel kernel_;
 
 };
 

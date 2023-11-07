@@ -243,9 +243,9 @@
             <uThumb>1</uThumb>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>EOOS_TYPE_STDLIB EOOS_GLOBAL_ENABLE_NO_HEAP EOOS_GLOBAL_NUMBER_OF_MUTEXS=5 EOOS_GLOBAL_NUMBER_OF_SEMAPHORES=5 EOOS_GLOBAL_NUMBER_OF_THREADS=5 EOOS_CPU_GLOBAL_NUMBER_OF_INTERRUPTS=5 EOOS_CPU_GLOBAL_NUMBER_OF_SYSTEM_TIMERS=1</Define>
+              <Define>EOOS_GLOBAL_TYPE_STDLIB EOOS_GLOBAL_ENABLE_NO_HEAP EOOS_GLOBAL_SYS_NUMBER_OF_MUTEXS=5 EOOS_GLOBAL_SYS_NUMBER_OF_SEMAPHORES=5 EOOS_GLOBAL_SYS_NUMBER_OF_THREADS=5 EOOS_GLOBAL_CPU_NUMBER_OF_INTERRUPTS=5 EOOS_GLOBAL_CPU_NUMBER_OF_SYSTEM_TIMERS=1 EOOS_GLOBAL_DRV_NUMBER_OF_USARTS=1</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\codebase\interface\include\public;..\..\codebase\interface\include\protected;..\..\codebase\library\include\public;..\..\codebase\system\include\public;..\..\codebase\system\include\protected;..\..\codebase\system\include\private;..\..\codebase\cpu\include\protected;..\..\codebase\kernel\include\protected;..\..\codebase\kernel\include\protected\portable;..\..\codebase\tests\include;..\..\codebase\driver\usart\include\public;..\..\codebase\driver\usart\include\private</IncludePath>
+              <IncludePath>..\..\codebase\interface\include\public;..\..\codebase\interface\include\protected;..\..\codebase\library\include\public;..\..\codebase\system\include\public;..\..\codebase\system\include\protected;..\..\codebase\system\include\private;..\..\codebase\cpu\include\protected;..\..\codebase\kernel\include\protected;..\..\codebase\kernel\include\protected\portable;..\..\codebase\tests\include;..\..\codebase\board\include\protected;..\..\codebase\driver\usart\include\public;..\..\codebase\driver\usart\include\private</IncludePath>
             </VariousControls>
           </Carm>
           <Aarm>
@@ -270,11 +270,21 @@
             <IncludeLibs></IncludeLibs>
             <IncludeDir></IncludeDir>
             <Misc>--specs=nosys.specs -lstdc++</Misc>
-            <ScatterFile>..\..\codebase\cpu\memory\Memory.HK32F103VET6.gcc.ld</ScatterFile>
+            <ScatterFile>..\..\codebase\board\memory\Memory.HK32F103VET6.gcc.ld</ScatterFile>
           </LDarm>
         </TargetArm>
       </TargetOption>
       <Groups>
+        <Group>
+          <GroupName>board</GroupName>
+          <Files>
+            <File>
+              <FileName>pcb.Board.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\board\source\pcb.Board.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
         <Group>
           <GroupName>cpu</GroupName>
           <Files>
@@ -336,6 +346,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>driver</GroupName>
+          <Files>
+            <File>
+              <FileName>drv.UsartController.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\driver\usart\source\drv.UsartController.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>drv.Usart.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\driver\usart\source\drv.Usart.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>kernel</GroupName>
           <Files>
             <File>
@@ -374,9 +399,9 @@
               <FilePath>..\..\codebase\kernel\source\timers.c</FilePath>
             </File>
             <File>
-              <FileName>port.cpp</FileName>
+              <FileName>port.Kernel.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\..\codebase\kernel\source\portable\port.cpp</FilePath>
+              <FilePath>..\..\codebase\kernel\source\portable\port.Kernel.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -497,21 +522,6 @@
               <FileName>DriverUsartTest.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\codebase\tests\source\DriverUsartTest.cpp</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>driver</GroupName>
-          <Files>
-            <File>
-              <FileName>drv.UsartController.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\codebase\driver\usart\source\drv.UsartController.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>drv.Usart.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\codebase\driver\usart\source\drv.Usart.cpp</FilePath>
             </File>
           </Files>
         </Group>

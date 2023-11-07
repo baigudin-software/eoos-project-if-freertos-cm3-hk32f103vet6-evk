@@ -114,7 +114,7 @@ private:
         /**
          * @brief Mutex memory allocator.
          */     
-        lib::ResourceMemory<Resource, EOOS_GLOBAL_NUMBER_OF_MUTEXS> memory;
+        lib::ResourceMemory<Resource, EOOS_GLOBAL_SYS_NUMBER_OF_MUTEXS> memory;
 
     };
 

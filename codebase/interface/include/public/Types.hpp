@@ -10,7 +10,7 @@
 
 #include "Definitions.hpp"
 
-#ifdef EOOS_TYPE_STDLIB
+#ifdef EOOS_GLOBAL_TYPE_STDLIB
 #include <cstdint>
 #endif
 
@@ -35,7 +35,7 @@ static const nullptr_t NULL( 0 );
 // NULLPTR definition for EOOS implenemtation
 static const nullptr_t NULLPTR( NULL );
 
-#if defined (EOOS_TYPE_STDLIB)
+#if defined (EOOS_GLOBAL_TYPE_STDLIB)
 // C++ Standard Library types
 typedef ::std::int16_t          int16_t;
 typedef ::std::uint16_t         uint16_t;
