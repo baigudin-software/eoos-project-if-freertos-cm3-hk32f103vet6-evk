@@ -290,14 +290,13 @@ void Thread<A>::start(void* pvParameters)
         thread->task_->start();
         thread->status_ = STATUS_DEAD;
     } while(false);
-    if(thread != NULLPTR)
-    {
-        ::vTaskSuspend(thread->thread_);
-    }
+    ::vTaskSuspend(NULL);
     // @note From The FreeRTOS Reference Manual:
     // Tasks are simply C functions that never exit and, 
-    // as such, are normally implemented as an infinite loop.    
-    while(true){}
+    // as such, are normally implemented as an infinite loop.
+    // Thus, if program is executed here, this means thread is null
+    // and a error occurred. Therefore, go to exit the function to
+    // the task exit address and terminate FreeRTOS port execution.
 }
 
 } // namespace sys

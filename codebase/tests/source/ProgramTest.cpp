@@ -124,14 +124,14 @@ int32_t Program::start(int32_t argc, char_t* argv[])
     
     // This is the Primary Task of FreeRTOS, and as soon as 
     // the RTOS does not support task exiting, do infinity loop.
-    uint32_t countUp(0x00000000);
-    uint32_t countDw(0xFFFFFFFF);    
-    while(true)
-    {
-        countUp++;
-        countDw--;
-    }
-    return -1;
+    //uint32_t countUp(0x00000000);
+    //uint32_t countDw(0xFFFFFFFF);    
+    //while(true)
+    //{
+    //    countUp++;
+    //    countDw--;
+    //}
+    return 0;
 }
 
 } // namespace eoos
