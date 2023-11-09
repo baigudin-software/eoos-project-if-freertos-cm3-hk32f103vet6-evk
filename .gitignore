@@ -27,11 +27,13 @@ Release
 *.m51
 *.plg
 *.uvopt
+*.uvoptx
 *.localadmin
 *.bak
 *.iex
 *.__i
 *.d
+DebugConfig/
 
 *.scvd
 JLinkLog.txt
