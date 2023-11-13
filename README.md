@@ -152,7 +152,7 @@ Press *Open* button to run the PyTTY terminal.
 
 ###### 2.3.3. Run and setup the project
 
-Go to *C:\REPOSITORY\EOOS\ide\eoos-exe-tests-keil\* and run the *eoos-tests-if-freertos.uvprojx* project.
+Go to *C:\REPOSITORY\EOOS\ide\eoos-exe-tests-keil\ * and run the *eoos-tests-if-freertos.uvprojx* project.
 
 Go to *Project -> Options for target 'eoos-tests'...*, go to *Debug* and chose your JTAG debugger. 
 For our example, we select *J-Link / J-Trace Cortex* Press *OK*.
