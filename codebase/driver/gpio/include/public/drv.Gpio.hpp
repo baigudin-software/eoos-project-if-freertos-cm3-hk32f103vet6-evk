@@ -65,7 +65,6 @@ public:
         ModeInput  input;
         ModeOutput output; 
     };
-    
 
     /**
      * @enum PortNumber
