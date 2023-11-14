@@ -11,6 +11,8 @@
 #include "MutexTest.hpp"
 #include "SemaphoreTest.hpp"
 #include "DriverUsartTest.hpp"
+#include "DriverNullTest.hpp"
+#include "DriverGpioTest.hpp"
 #include "lib.Stream.hpp"
 #include "sys.System.hpp"
 
@@ -106,7 +108,7 @@ static void printConfiguration()
 int32_t Program::start(int32_t argc, char_t* argv[])
 {
     printConfiguration();
-    
+        
     // Comment to lock or uncomment to execute
     // testContexSwitch();
     
@@ -121,16 +123,13 @@ int32_t Program::start(int32_t argc, char_t* argv[])
 
     // Comment to lock or uncomment to execute    
     // testDriverUsart();
+
+    // Comment to lock or uncomment to execute    
+    // testDriverNull();        
+
+    // Comment to lock or uncomment to execute    
+    testDriverGpio();
     
-    // This is the Primary Task of FreeRTOS, and as soon as 
-    // the RTOS does not support task exiting, do infinity loop.
-    //uint32_t countUp(0x00000000);
-    //uint32_t countDw(0xFFFFFFFF);    
-    //while(true)
-    //{
-    //    countUp++;
-    //    countDw--;
-    //}
     return 0;
 }
 

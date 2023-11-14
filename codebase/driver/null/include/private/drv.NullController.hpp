@@ -1,13 +1,13 @@
 /**
- * @file      drv.UsartController.hpp
+ * @file      drv.NullController.hpp
  * @author    Sergey Baigudin, sergey@baigudin.software
  * @copyright 2023, Sergey Baigudin, Baigudin Software
  */  
-#ifndef DRV_USARTCONTROLLER_HPP_
-#define DRV_USARTCONTROLLER_HPP_
+#ifndef DRV_NULLCONTROLLER_HPP_
+#define DRV_NULLCONTROLLER_HPP_
 
-#include "drv.UsartResource.hpp"
-#include "drv.UsartDefinitions.hpp"
+#include "drv.NullResource.hpp"
+#include "drv.NullDefinitions.hpp"
 #include "lib.NonCopyable.hpp"
 #include "lib.NoAllocator.hpp"
 #include "lib.Mutex.hpp"
@@ -20,25 +20,25 @@ namespace drv
 {
 
 /**
- * @class UsartController
- * @brief Universal Synchronous Asynchronous Transceiver (USART) controller.
+ * @class NullController
+ * @brief Unknown device controller.
  */
-class UsartController : public lib::NonCopyable<lib::NoAllocator>
+class NullController : public lib::NonCopyable<lib::NoAllocator>
 {
     typedef lib::NonCopyable<lib::NoAllocator> Parent;
-    typedef UsartResource<UsartController> Resource;
+    typedef NullResource<NullController> Resource;
     
 public:
 
     /**
      * @brief Constructor.
      */
-    UsartController();
+    NullController();
 
     /**
      * @brief Destructor.
      */
-    virtual ~UsartController();
+    virtual ~NullController();
 
     /**
      * @copydoc eoos::api::Object::isConstructed()
@@ -48,10 +48,10 @@ public:
     /**
      * @brief Creates a new HW interrupt resource.
      *
-     * @param config Configuration of USART or UART.
+     * @param config Configuration of the driver resource.
      * @return A new resource, or NULL if an error has been occurred.
      */      
-    Usart* createResource(Usart::SerialLineConfig const& config);
+    Null* createResource(Null::Config const& config);
     
     /**
      * @brief Allocates memory.
@@ -131,7 +131,7 @@ private:
         /**
          * @brief Resource memory allocator.
          */
-        lib::ResourceMemory<Resource, EOOS_GLOBAL_DRV_NUMBER_OF_USARTS> memory;
+        lib::ResourceMemory<Resource, EOOS_GLOBAL_DRV_NUMBER_OF_NULLS> memory;
 
     };    
     
@@ -161,4 +161,4 @@ private:
 
 } // namespace drv
 } // namespace eoos
-#endif // DRV_USARTCONTROLLER_HPP_
+#endif // DRV_NULLCONTROLLER_HPP_

@@ -67,8 +67,8 @@ public:
     /**
      * @brief Constructor.
      *
+     * @param data Global data for all resource objects.     
      * @param config Configuration of USART or UART.
-     * @param number Number of USART or UART.
      */
     UsartResource(Data& data, SerialLineConfig const& config);
     
@@ -231,16 +231,19 @@ bool_t UsartResource<A>::isConstructed() const
 template <class A>
 api::OutStream<char_t>& UsartResource<A>::operator<<(char_t const* source)
 {
-    while( *source != '\0' )
+    if( isConstructed() )
     {
-        lib::Guard<A> const guard(mutex_);
-        volatile uint32_t txe( 0 );
-        do 
+        while( *source != '\0' )
         {
-            txe = reg_->sr.bit.txe;
-        } while( txe == 0 );
-        reg_->dr.bit.dr = *source;
-        source++;
+            lib::Guard<A> const guard(mutex_);
+            volatile uint32_t txe( 0 );
+            do 
+            {
+                txe = reg_->sr.bit.txe;
+            } while( txe == 0 );
+            reg_->dr.bit.dr = *source;
+            source++;
+        }
     }
     return *this;
 }
@@ -313,6 +316,50 @@ bool_t UsartResource<A>::initialize()
         res = true;
     } while(false);
     return res;
+}
+
+template <class A>
+void UsartResource<A>::deinitialize()
+{
+    lib::Guard<A> const guard(data_.mutex);
+    switch( config_.number )
+    {
+        case NUMBER_USART1:
+        {
+            data_.reg.rcc->apb2rstr.bit.usart1rst = 1;
+            data_.reg.rcc->apb2rstr.bit.usart1rst = 0;
+            break;
+        }
+        case NUMBER_USART2:
+        {
+            data_.reg.rcc->apb1rstr.bit.usart2rst = 1;
+            data_.reg.rcc->apb1rstr.bit.usart2rst = 0;
+            break;
+        }
+        case NUMBER_USART3:
+        {
+            data_.reg.rcc->apb1rstr.bit.usart3rst = 1;
+            data_.reg.rcc->apb1rstr.bit.usart3rst = 0;
+            break;
+        }
+        case NUMBER_UART4:
+        {
+            data_.reg.rcc->apb1rstr.bit.uart4rst = 1;
+            data_.reg.rcc->apb1rstr.bit.uart4rst = 0;            
+            break;
+        }
+        case NUMBER_UART5:
+        {
+            data_.reg.rcc->apb1rstr.bit.uart5rst = 1;
+            data_.reg.rcc->apb1rstr.bit.uart5rst = 0;            
+            break;
+        }
+        default:
+        {
+            break;
+        }        
+    }
+    enableClock(false);
 }
 
 template <class A>
@@ -593,50 +640,6 @@ void UsartResource<A>::setFlowControl()
         reg_->cr3.bit.rtse = 0;  // Set RTS enable to Disable RTS hardware flow control
         reg_->cr3.bit.ctse = 0;  // Set CTS enable to Disable CTS hardware flow control
     }
-}
-
-template <class A>
-void UsartResource<A>::deinitialize()
-{
-    lib::Guard<A> const guard(data_.mutex);
-    switch( config_.number )
-    {
-        case NUMBER_USART1:
-        {
-            data_.reg.rcc->apb2rstr.bit.usart1rst = 1;
-            data_.reg.rcc->apb2rstr.bit.usart1rst = 0;
-            break;
-        }
-        case NUMBER_USART2:
-        {
-            data_.reg.rcc->apb1rstr.bit.usart2rst = 1;
-            data_.reg.rcc->apb1rstr.bit.usart2rst = 0;
-            break;
-        }
-        case NUMBER_USART3:
-        {
-            data_.reg.rcc->apb1rstr.bit.usart3rst = 1;
-            data_.reg.rcc->apb1rstr.bit.usart3rst = 0;
-            break;
-        }
-        case NUMBER_UART4:
-        {
-            data_.reg.rcc->apb1rstr.bit.uart4rst = 1;
-            data_.reg.rcc->apb1rstr.bit.uart4rst = 0;            
-            break;
-        }
-        case NUMBER_UART5:
-        {
-            data_.reg.rcc->apb1rstr.bit.uart5rst = 1;
-            data_.reg.rcc->apb1rstr.bit.uart5rst = 0;            
-            break;
-        }
-        default:
-        {
-            break;
-        }        
-    }
-    enableClock(false);
 }
 
 template <class A>

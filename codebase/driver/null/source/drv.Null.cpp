@@ -1,10 +1,10 @@
 /**
- * @file      drv.Usart.cpp
+ * @file      drv.Null.cpp
  * @author    Sergey Baigudin, sergey@baigudin.software
  * @copyright 2023, Sergey Baigudin, Baigudin Software
  */
-#include "drv.Usart.hpp"
-#include "drv.UsartController.hpp"
+#include "drv.Null.hpp"
+#include "drv.NullController.hpp"
 #include "lib.UniquePointer.hpp"
 
 namespace eoos
@@ -12,12 +12,12 @@ namespace eoos
 namespace drv
 {
     
-static UsartController* getController()
+static NullController* getController()
 {
-    static UsartController* controller( NULLPTR );    
+    static NullController* controller( NULLPTR );    
     if( controller == NULLPTR )
     {
-        controller = new UsartController;
+        controller = new NullController;
         if( controller != NULLPTR )
         {
             if( !controller->isConstructed() )
@@ -30,10 +30,10 @@ static UsartController* getController()
     return controller;
 }
     
-Usart* Usart::create(SerialLineConfig const& config)
+Null* Null::create(Config const& config)
 {
-    UsartController* const controller( getController() );    
-    lib::UniquePointer<Usart> res( controller->createResource(config) );
+    NullController* const controller( getController() );    
+    lib::UniquePointer<Null> res( controller->createResource(config) );
     if( !res.isNull() )
     {
         if( !res->isConstructed() )
@@ -44,7 +44,7 @@ Usart* Usart::create(SerialLineConfig const& config)
     return res.release();
 }
 
-Usart::~Usart(){}
+Null::~Null(){}
 
 } // namespace drv
 } // namespace eoos

@@ -1,13 +1,13 @@
 /**
- * @file      drv.UsartController.hpp
+ * @file      drv.GpioController.hpp
  * @author    Sergey Baigudin, sergey@baigudin.software
  * @copyright 2023, Sergey Baigudin, Baigudin Software
  */  
-#ifndef DRV_USARTCONTROLLER_HPP_
-#define DRV_USARTCONTROLLER_HPP_
+#ifndef DRV_GPIOCONTROLLER_HPP_
+#define DRV_GPIOCONTROLLER_HPP_
 
-#include "drv.UsartResource.hpp"
-#include "drv.UsartDefinitions.hpp"
+#include "drv.GpioResource.hpp"
+#include "drv.GpioDefinitions.hpp"
 #include "lib.NonCopyable.hpp"
 #include "lib.NoAllocator.hpp"
 #include "lib.Mutex.hpp"
@@ -20,25 +20,25 @@ namespace drv
 {
 
 /**
- * @class UsartController
- * @brief Universal Synchronous Asynchronous Transceiver (USART) controller.
+ * @class GpioController
+ * @brief Unknown device controller.
  */
-class UsartController : public lib::NonCopyable<lib::NoAllocator>
+class GpioController : public lib::NonCopyable<lib::NoAllocator>
 {
     typedef lib::NonCopyable<lib::NoAllocator> Parent;
-    typedef UsartResource<UsartController> Resource;
+    typedef GpioResource<GpioController> Resource;
     
 public:
 
     /**
      * @brief Constructor.
      */
-    UsartController();
+    GpioController();
 
     /**
      * @brief Destructor.
      */
-    virtual ~UsartController();
+    virtual ~GpioController();
 
     /**
      * @copydoc eoos::api::Object::isConstructed()
@@ -48,10 +48,10 @@ public:
     /**
      * @brief Creates a new HW interrupt resource.
      *
-     * @param config Configuration of USART or UART.
+     * @param config Configuration of the driver resource.
      * @return A new resource, or NULL if an error has been occurred.
      */      
-    Usart* createResource(Usart::SerialLineConfig const& config);
+    Gpio* createResource(Gpio::Config const& config);
     
     /**
      * @brief Allocates memory.
@@ -131,7 +131,7 @@ private:
         /**
          * @brief Resource memory allocator.
          */
-        lib::ResourceMemory<Resource, EOOS_GLOBAL_DRV_NUMBER_OF_USARTS> memory;
+        lib::ResourceMemory<Resource, EOOS_GLOBAL_DRV_NUMBER_OF_GPIOS> memory;
 
     };    
     
@@ -161,4 +161,4 @@ private:
 
 } // namespace drv
 } // namespace eoos
-#endif // DRV_USARTCONTROLLER_HPP_
+#endif // DRV_GPIOCONTROLLER_HPP_

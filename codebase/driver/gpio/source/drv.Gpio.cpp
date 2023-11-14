@@ -1,23 +1,23 @@
 /**
- * @file      drv.Usart.cpp
+ * @file      drv.Gpio.cpp
  * @author    Sergey Baigudin, sergey@baigudin.software
  * @copyright 2023, Sergey Baigudin, Baigudin Software
  */
-#include "drv.Usart.hpp"
-#include "drv.UsartController.hpp"
+#include "drv.Gpio.hpp"
+#include "drv.GpioController.hpp"
 #include "lib.UniquePointer.hpp"
 
 namespace eoos
 {
 namespace drv
 {
-    
-static UsartController* getController()
+
+static GpioController* getController()
 {
-    static UsartController* controller( NULLPTR );    
+    static GpioController* controller( NULLPTR );    
     if( controller == NULLPTR )
     {
-        controller = new UsartController;
+        controller = new GpioController;
         if( controller != NULLPTR )
         {
             if( !controller->isConstructed() )
@@ -30,10 +30,10 @@ static UsartController* getController()
     return controller;
 }
     
-Usart* Usart::create(SerialLineConfig const& config)
+Gpio* Gpio::create(Config const& config)
 {
-    UsartController* const controller( getController() );    
-    lib::UniquePointer<Usart> res( controller->createResource(config) );
+    GpioController* const controller( getController() );    
+    lib::UniquePointer<Gpio> res( controller->createResource(config) );
     if( !res.isNull() )
     {
         if( !res->isConstructed() )
@@ -44,7 +44,7 @@ Usart* Usart::create(SerialLineConfig const& config)
     return res.release();
 }
 
-Usart::~Usart(){}
+Gpio::~Gpio(){}
 
 } // namespace drv
 } // namespace eoos
