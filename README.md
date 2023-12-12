@@ -135,7 +135,7 @@ to CN3 port and to USB port of the host PC for UART interface connection.
 
 ###### 2.3.2. Run PyTTY terminal for serial UART connection
 
-Check COM port number for this press Windows + R keyboard shortcut to launch the Windows Run box, 
+Check COM port number for this press *Windows + R* keyboard shortcut to launch the Windows Run box, 
 type *devmgmt.msc* and click the *OK* button. The Device Manager window appears, go to ports (COM and LPT)
 and check your COM port number for USB-SERIAL CH340 device.
 
@@ -181,3 +181,5 @@ MEMORY MODE: System timer in pool memory of 1.
 MEMORY MODE: USART driver in pool memory of 1.
 EOOS: Size of system 13168 Bytes
 ```
+
+And check that `LED1` is blinking.
