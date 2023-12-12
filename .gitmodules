@@ -7,3 +7,6 @@
 [submodule "codebase/system"]
 	path = codebase/system
 	url = ../eoos-system-if-freertos.git
+[submodule "codebase/kernel"]
+	path = codebase/kernel
+	url = ../eoos-kernel-if-freertos.git
