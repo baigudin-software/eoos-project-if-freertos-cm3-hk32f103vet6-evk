@@ -4,3 +4,6 @@
 [submodule "codebase/library"]
 	path = codebase/library
 	url = ../eoos-library.git
+[submodule "codebase/system"]
+	path = codebase/system
+	url = ../eoos-system-if-freertos.git
