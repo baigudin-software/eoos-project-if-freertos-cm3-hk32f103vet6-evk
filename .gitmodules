@@ -16,3 +16,6 @@
 [submodule "codebase/driver/gpio"]
 	path = codebase/driver/gpio
 	url = ../eoos-driver-gpio-if-stm32f103xx.git
+[submodule "codebase/driver/usart"]
+	path = codebase/driver/usart
+	url = ../eoos-driver-usart-if-stm32f103xx.git
