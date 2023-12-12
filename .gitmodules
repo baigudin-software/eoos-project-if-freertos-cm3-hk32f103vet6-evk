@@ -1,3 +1,6 @@
 [submodule "codebase/interface"]
 	path = codebase/interface
 	url = ../eoos-api.git
+[submodule "codebase/library"]
+	path = codebase/library
+	url = ../eoos-library.git
