@@ -13,3 +13,6 @@
 [submodule "codebase/cpu"]
 	path = codebase/cpu
 	url = ../eoos-cpu-if-stm32f103xx.git
+[submodule "codebase/driver/gpio"]
+	path = codebase/driver/gpio
+	url = ../eoos-driver-gpio-if-stm32f103xx.git
