@@ -36,8 +36,7 @@ public:
      */
     Guard(api::Guard& guard) 
         : NonCopyable<A>()
-        , guard_( guard )
-        , isLocked_( false ){
+        , guard_( guard ){
         bool_t const isConstructed( construct() );
         setConstructed( isConstructed );                    
     }
@@ -47,9 +46,9 @@ public:
      */
     virtual ~Guard()
     {
-        if( isLocked_ )
+        if( isConstructed() )
         {
-            isLocked_ = !guard_.unlock();
+            static_cast<void>( guard_.unlock() );
         }
     }
     
@@ -67,18 +66,10 @@ private:
     bool_t construct()
     {
         bool_t res( false );
-        do
+        if( isConstructed() )
         {
-            if( !isConstructed() )
-            {   ///< UT Justified Branch: HW dependency
-                break;
-            }
-            if( !guard_.isConstructed() )
-            {
-                break;
-            }
-            isLocked_ = guard_.lock();
-        } while(false);
+            res = guard_.lock();
+        }
         return res;
     }
     
@@ -86,11 +77,6 @@ private:
      * @brief Guard resource identifier.
      */
     api::Guard& guard_;
-
-    /**
-     * @brief Guard lock flag.
-     */
-    bool_t isLocked_;
 };
 
 } // namespace lib

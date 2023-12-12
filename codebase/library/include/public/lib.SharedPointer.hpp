@@ -9,7 +9,8 @@
 #include "lib.Object.hpp"
 #include "api.SmartPointer.hpp"
 #include "lib.SmartPointerDeleter.hpp"
-#include "lib.MutexGuard.hpp"
+#include "lib.Guard.hpp"
+#include "lib.Mutex.hpp"
 #include "lib.NonCopyable.hpp"
 
 namespace eoos
@@ -263,32 +264,22 @@ private:
      *
      * @param pointer A pointer to get ownership.
      * @return True if this object has been constructed successfully.
-     */     
+     */
     bool_t construct(T* const pointer = NULLPTR)
     {
         bool_t res( false );
-        do
+        if( isConstructed() )
         {
-            if( !isConstructed() )
-            {   ///< UT Justified Branch: HW dependency
-                D::free(pointer);
-                break;
-            }
             cb_ = new ControlBlock<T,D,A>(pointer);
-            if(cb_ == NULLPTR)
+            if( Parent::isConstructed(cb_) )
             {
-                D::free(pointer);
-                break;
+                res = true;
             }
-            if( !cb_->isConstructed() )
-            {   ///< UT Justified Branch: HW dependency
-                D::free(pointer);                
-                delete cb_;
-                cb_ = NULLPTR;
-                break;
-            }
-            res = true;
-        } while(false);
+        }
+        if( res != true )
+        {
+            deleteControlBlock(pointer);
+        }
         return res;
     }
 
@@ -302,12 +293,10 @@ private:
             int32_t const counter( cb_->decrease() );
             if(counter == 0)
             {
-                D::free(cb_->getPointer());
-                delete cb_;
-                cb_ = NULLPTR;            
+                deleteControlBlock(cb_->getPointer());
             }
         }
-    }        
+    }  
 
     /**
      * @brief Acquires a managed object by control block.
@@ -317,6 +306,21 @@ private:
         if( cb_ != NULLPTR )
         {
             cb_->increase();
+        }
+    }
+
+    /**
+     * @brief Deletes the control block.
+     *
+     * @param pointer A pointer to get ownership.
+     */
+    void deleteControlBlock(T* const pointer)
+    {
+        D::free(pointer);
+        if( cb_ != NULLPTR )
+        {
+            delete cb_;
+            cb_ = NULLPTR;
         }
     }
 
@@ -371,7 +375,7 @@ private:
          */
         void increase()
         {
-            MutexGuard<AA> const guard(mutex_);
+            Guard<AA> const guard(mutex_);
             static_cast<void>(guard);            
             ++counter_;
         }
@@ -383,7 +387,7 @@ private:
          */        
         int32_t decrease()
         {
-            MutexGuard<AA> const guard(mutex_);
+            Guard<AA> const guard(mutex_);
             static_cast<void>(guard);            
             return --counter_;
         }
@@ -416,18 +420,13 @@ private:
         bool_t construct()
         {
             bool_t res( false );
-            do
+            if( isConstructed() )
             {
-                if( !isConstructed() )
-                {   ///< UT Justified Branch: HW dependency
-                    break;
+                if( mutex_.isConstructed() )
+                {
+                    res = true;
                 }
-                if( !mutex_.isConstructed() )
-                {   ///< UT Justified Branch: HW dependency
-                    break;
-                }
-                res = true;
-            } while(false);
+            }
             return res;
         }
         

@@ -41,14 +41,16 @@ public:
      * @brief Causes current thread to sleep.
      *
      * @param ms A time to sleep in milliseconds.
-     * @return true if thread slept requested time.
+     * @return True if thread slept requested time.
      */
     virtual bool_t sleep(int32_t ms) = 0;
 
     /**
      * @brief Yields to next thread.
+     * 
+     * @return True if thread is yielded.
      */
-    virtual void yield() = 0;
+    virtual bool_t yield() = 0;
 
 };
 

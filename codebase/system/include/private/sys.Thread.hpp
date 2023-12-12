@@ -88,7 +88,7 @@ private:
     /**
      * @brief Nubmer of stack elements of uint32_t.
      */    
-    static const uint32_t THREAD_STACK_DEPTH = EOOS_SYS_FREERTOS_TASK_STACK_SIZE / 4;
+    static const uint32_t THREAD_STACK_DEPTH = EOOS_GLOBAL_SYS_FREERTOS_TASK_STACK_SIZE / 4;
     
     /**
      * @brief User executing runnable interface.

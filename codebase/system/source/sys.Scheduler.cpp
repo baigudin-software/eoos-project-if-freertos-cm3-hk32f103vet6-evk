@@ -71,12 +71,15 @@ bool_t Scheduler::sleep(int32_t ms)
     return res;
 }
 
-void Scheduler::yield()
+bool_t Scheduler::yield()
 {
+    bool_t res( false );
     if( isConstructed() )
     {
         taskYIELD();
+        res = true;
     }
+    return res;
 }
 
 bool_t Scheduler::construct()
