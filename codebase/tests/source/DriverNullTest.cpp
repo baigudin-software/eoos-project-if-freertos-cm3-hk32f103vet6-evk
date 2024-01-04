@@ -7,6 +7,7 @@
  */
 #include "DriverNullTest.hpp"
 #include "drv.Null.hpp"
+#include "lib.UniquePointer.hpp"
 
 namespace eoos
 {
@@ -16,9 +17,8 @@ void testDriverNull()
     drv::Null::Config config = {
         .number      = drv::Null::NUMBER_NULL0,
     };
-    drv::Null* uart( drv::Null::create(config) );
+    lib::UniquePointer<drv::Null> uart( drv::Null::create(config) );
     *uart << "Hello, World!" << "\r\n";
-    delete uart;
 }
 
 } // namespace eoos

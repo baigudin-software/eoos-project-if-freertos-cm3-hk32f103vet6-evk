@@ -13,6 +13,7 @@
 #include "DriverUsartTest.hpp"
 #include "DriverNullTest.hpp"
 #include "DriverGpioTest.hpp"
+#include "DriverCanTest.hpp"
 #include "lib.Stream.hpp"
 #include "sys.System.hpp"
 
@@ -125,7 +126,10 @@ int32_t Program::start(int32_t argc, char_t* argv[])
     // testDriverUsart();
 
     // Comment to lock or uncomment to execute    
-    // testDriverNull();        
+    // testDriverNull(); 
+
+    // Comment to lock or uncomment to execute    
+    testDriverCan();
 
     // Comment to lock or uncomment to execute    
     testDriverGpio();

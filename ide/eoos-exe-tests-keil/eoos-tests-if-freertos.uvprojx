@@ -243,9 +243,9 @@
             <uThumb>1</uThumb>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>EOOS_GLOBAL_TYPE_STDLIB EOOS_GLOBAL_ENABLE_NO_HEAP EOOS_GLOBAL_SYS_FREERTOS_TASK_STACK_SIZE=1024 EOOS_GLOBAL_SYS_NUMBER_OF_MUTEXS=5 EOOS_GLOBAL_SYS_NUMBER_OF_SEMAPHORES=5 EOOS_GLOBAL_SYS_NUMBER_OF_THREADS=5 EOOS_GLOBAL_CPU_NUMBER_OF_INTERRUPTS=5 EOOS_GLOBAL_CPU_NUMBER_OF_SYSTEM_TIMERS=1 EOOS_GLOBAL_DRV_NUMBER_OF_USARTS=1 EOOS_GLOBAL_DRV_NUMBER_OF_NULLS=1 EOOS_GLOBAL_DRV_NUMBER_OF_GPIOS=3</Define>
+              <Define>EOOS_GLOBAL_TYPE_STDLIB EOOS_GLOBAL_ENABLE_NO_HEAP EOOS_GLOBAL_SYS_FREERTOS_TASK_STACK_SIZE=1024 EOOS_GLOBAL_SYS_NUMBER_OF_MUTEXS=5 EOOS_GLOBAL_SYS_NUMBER_OF_SEMAPHORES=5 EOOS_GLOBAL_SYS_NUMBER_OF_THREADS=5 EOOS_GLOBAL_CPU_NUMBER_OF_INTERRUPTS=5 EOOS_GLOBAL_CPU_NUMBER_OF_SYSTEM_TIMERS=1 EOOS_GLOBAL_DRV_NUMBER_OF_USARTS=1 EOOS_GLOBAL_DRV_NUMBER_OF_NULLS=1 EOOS_GLOBAL_DRV_NUMBER_OF_GPIOS=3 EOOS_GLOBAL_DRV_NUMBER_OF_CANS=1</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\codebase\interface\include\public;..\..\codebase\interface\include\protected;..\..\codebase\library\include\public;..\..\codebase\system\include\public;..\..\codebase\system\include\protected;..\..\codebase\system\include\private;..\..\codebase\cpu\include\protected;..\..\codebase\kernel\include\protected;..\..\codebase\kernel\include\protected\portable;..\..\codebase\tests\include;..\..\codebase\board\include\protected;..\..\codebase\driver\usart\include\public;..\..\codebase\driver\usart\include\private;..\..\codebase\driver\null\include\public;..\..\codebase\driver\null\include\private;..\..\codebase\driver\gpio\include\public;..\..\codebase\driver\gpio\include\private</IncludePath>
+              <IncludePath>..\..\codebase\interface\include\public;..\..\codebase\interface\include\protected;..\..\codebase\library\include\public;..\..\codebase\system\include\public;..\..\codebase\system\include\protected;..\..\codebase\system\include\private;..\..\codebase\cpu\include\protected;..\..\codebase\kernel\include\protected;..\..\codebase\kernel\include\protected\portable;..\..\codebase\tests\include;..\..\codebase\board\include\protected;..\..\codebase\driver\usart\include\public;..\..\codebase\driver\usart\include\private;..\..\codebase\driver\null\include\public;..\..\codebase\driver\null\include\private;..\..\codebase\driver\gpio\include\public;..\..\codebase\driver\gpio\include\private;..\..\codebase\driver\can\include\public;..\..\codebase\driver\can\include\private</IncludePath>
             </VariousControls>
           </Carm>
           <Aarm>
@@ -377,6 +377,16 @@
               <FileName>drv.GpioController.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\codebase\driver\gpio\source\drv.GpioController.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>drv.Can.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\driver\can\source\drv.Can.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>drv.CanController.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\driver\can\source\drv.CanController.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -552,6 +562,11 @@
               <FileName>DriverGpioTest.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\codebase\tests\source\DriverGpioTest.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>DriverCanTest.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\tests\source\DriverCanTest.cpp</FilePath>
             </File>
           </Files>
         </Group>

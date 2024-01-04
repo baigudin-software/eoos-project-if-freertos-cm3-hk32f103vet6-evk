@@ -7,6 +7,7 @@
  */
 #include "DriverUsartTest.hpp"
 #include "drv.Usart.hpp"
+#include "lib.UniquePointer.hpp"
 
 namespace eoos
 {
@@ -22,9 +23,8 @@ void testDriverUsart()
         .parity      = drv::Usart::PARITY_NONE,
         .flowControl = drv::Usart::FLOWCONTROL_NONE
     };
-    drv::Usart* uart( drv::Usart::create(config) );
+    lib::UniquePointer<drv::Usart> uart( drv::Usart::create(config) );
     *uart << "Hello, World!" << "\r\n";
-    delete uart;
 }
 
 } // namespace eoos

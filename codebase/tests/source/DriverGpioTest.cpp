@@ -8,6 +8,7 @@
 #include "DriverGpioTest.hpp"
 #include "drv.Gpio.hpp"
 #include "lib.Thread.hpp"
+#include "lib.UniquePointer.hpp"
 
 namespace eoos
 {
@@ -22,8 +23,7 @@ void testDriverGpio()
         .port = drv::Gpio::PORTNUMBER_B,
         .gpio = drv::Gpio::GPIONUMBER_1
     };
-    drv::Gpio* gpio( drv::Gpio::create(config) );
-
+    lib::UniquePointer<drv::Gpio> gpio( drv::Gpio::create(config) );
     while(true)
     {
         gpio->pullUp();
@@ -39,8 +39,6 @@ void testDriverGpio()
         }        
         lib::Thread<>::sleep(1000);        
     }
-
-    delete gpio;
 }
 
 } // namespace eoos
