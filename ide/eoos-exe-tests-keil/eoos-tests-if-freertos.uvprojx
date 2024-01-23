@@ -388,6 +388,16 @@
               <FileType>8</FileType>
               <FilePath>..\..\codebase\driver\can\source\drv.CanController.cpp</FilePath>
             </File>
+            <File>
+              <FileName>drv.CanResourceMailbox.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\driver\can\source\drv.CanResourceMailbox.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>drv.CanResourceRoutineTx.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\driver\can\source\drv.CanResourceRoutineTx.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -492,11 +502,6 @@
               <FileName>sys.ThreadPrimary.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\codebase\system\source\sys.ThreadPrimary.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>sys.SchedulerRoutineBase.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\codebase\system\source\sys.SchedulerRoutineBase.cpp</FilePath>
             </File>
             <File>
               <FileName>sys.SchedulerRoutineSvcall.cpp</FileName>

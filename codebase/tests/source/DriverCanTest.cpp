@@ -16,7 +16,9 @@ void testDriverCan()
 {
     drv::Can::Config config = {
         .number = drv::Can::NUMBER_CAN1,
-        .reg    = {
+        .bitRate = drv::Can::BITRATE_250,
+        .samplePoint = drv::Can::SAMPLEPOINT_CANOPEN,
+        .reg = {
             .mcr = {
                 .txfp = 0, ///< Transmit FIFO priority (reset value is 0)
                 .rflm = 0, ///< Receive FIFO locked mode (reset value is 0)
@@ -26,16 +28,37 @@ void testDriverCan()
                 .ttcm = 0  ///< Time triggered communication mode (reset value is 0)
             },
             .btr = {
-                .brp  = 0, ///< Baud rate prescaler (reset value is 0)
-                .ts1  = 3, ///< Time segment 1 (reset value is 3)
-                .ts2  = 2, ///< Time segment 2 (reset value is 2)
-                .sjw  = 0, ///< Resynchronization jump width (reset value is 0)
                 .lbkm = 1, ///< Loop back mode for debug (reset value is 0)
                 .silm = 1  ///< Silent mode for debug (reset value is 0)
             }
         }
     };
     lib::UniquePointer<drv::Can> can( drv::Can::create(config) );
+    
+    drv::Can::TxHandler* handler(NULLPTR);
+    drv::Can::TxMessage message = {
+        .id  = 0x12345678,
+        .ide = true,
+        .rtr = false,
+        .dlc = 3,
+        .data = {
+            .v8 = {
+                0x18,
+                0x01,
+                0x24
+            }
+        }
+    };
+    handler = can->transmit(message);
+    if( handler !=NULLPTR )
+    {
+        bool_t res( handler->isTransmited() );
+        if( !res )
+        {
+
+        }
+    }
+    while(true);
 }
 
 } // namespace eoos

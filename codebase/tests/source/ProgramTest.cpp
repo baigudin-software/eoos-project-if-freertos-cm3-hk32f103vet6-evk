@@ -129,7 +129,7 @@ int32_t Program::start(int32_t argc, char_t* argv[])
     // testDriverNull(); 
 
     // Comment to lock or uncomment to execute    
-    testDriverCan();
+    // testDriverCan();
 
     // Comment to lock or uncomment to execute    
     testDriverGpio();
