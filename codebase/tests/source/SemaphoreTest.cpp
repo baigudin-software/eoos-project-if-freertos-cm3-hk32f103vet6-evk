@@ -8,6 +8,7 @@
 #include "SemaphoreTest.hpp"
 #include "lib.AbstractThreadTask.hpp"
 #include "lib.Semaphore.hpp"
+#include "sys.Semaphore.hpp"
 
 namespace eoos
 {
@@ -91,18 +92,18 @@ void testSemaphoreAsMutex()
     }
 }
 
-
-} // namespace
-
-void testSemaphore()
+void testSemaphoreAsCounting()
 {
-    testSemaphoreAsMutex();
-    
     bool res( false );
     lib::Semaphore<> semAcquire(0);
     lib::Semaphore<> semRelease(0);
     ThreadTask thread(semAcquire, semRelease);
     thread.execute();
+    res = semAcquire.release();
+    if( res == false )
+    {   // Failure
+        while(true){}        
+    }
     res = semAcquire.release();
     if( res == false )
     {   // Failure
@@ -118,6 +119,44 @@ void testSemaphore()
     {   // Failure
         while(true){}
     }
+}
+
+void testSemaphoreAsBinary()
+{
+    bool res( false );
+    sys::Semaphore semAcquire(sys::Semaphore::TYPE_BINARY);
+    sys::Semaphore semRelease(sys::Semaphore::TYPE_BINARY);
+    ThreadTask thread(semAcquire, semRelease);
+    thread.execute();
+    res = semAcquire.release();
+    if( res == false )
+    {   // Failure
+        while(true){}        
+    }
+    res = semAcquire.release();
+    if( res == true )
+    {   // Failure
+        while(true){}        
+    }
+    res = semRelease.acquire();
+    if( res == false )
+    {   // Failure
+        while(true){}        
+    }
+    bool_t wasAcquired( thread.wasAcquired() );
+    if( !wasAcquired )
+    {   // Failure
+        while(true){}
+    }
+}
+
+} // namespace
+
+void testSemaphore()
+{
+    testSemaphoreAsMutex();
+    testSemaphoreAsCounting();
+    testSemaphoreAsBinary();
     // Success
     while(true){}
 }

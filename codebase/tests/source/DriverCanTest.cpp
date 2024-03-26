@@ -8,9 +8,54 @@
 #include "DriverCanTest.hpp"
 #include "drv.Can.hpp"
 #include "lib.UniquePointer.hpp"
+#include "lib.AbstractThreadTask.hpp"
 
 namespace eoos
 {
+    
+namespace
+{
+    
+class ThreadWaitTx : public lib::AbstractThreadTask<>
+{
+    
+public:
+
+    ThreadWaitTx(drv::Can&  can)
+        : lib::AbstractThreadTask<>()
+        , can_( can ) {
+    }
+        
+private:
+
+    virtual void start()
+    {
+        drv::Can::TxMessage message = {
+            .id  = 0x12345678,
+            .ide = true,
+            .rtr = false,
+            .dlc = 8,
+            .data = {
+                .v64 = {
+                    0x0000000000000000
+                }
+            }
+        };
+        while(true)
+        {
+            bool_t res( can_.transmit(message) );
+            if( res == false )
+            {
+                message.data.v64[0]--;
+            }
+            message.data.v64[0]++;
+        }
+    }
+
+    drv::Can&  can_;
+};
+
+}
 
 void testDriverCan()
 {
@@ -25,7 +70,8 @@ void testDriverCan()
                 .nart = 0, ///< No automatic retransmission (reset value is 0)
                 .awum = 0, ///< Automatic wake-up mode (reset value is 0)
                 .abom = 0, ///< Automatic bus-off management (reset value is 0)
-                .ttcm = 0  ///< Time triggered communication mode (reset value is 0)
+                .ttcm = 0, ///< Time triggered communication mode (reset value is 0)
+                .dbf  = 1  ///< CAN reception and transmission frozen during debug (reset value is 1)
             },
             .btr = {
                 .lbkm = 1, ///< Loop back mode for debug (reset value is 0)
@@ -33,31 +79,10 @@ void testDriverCan()
             }
         }
     };
-    lib::UniquePointer<drv::Can> can( drv::Can::create(config) );
-    
-    drv::Can::TxHandler* handler(NULLPTR);
-    drv::Can::TxMessage message = {
-        .id  = 0x12345678,
-        .ide = true,
-        .rtr = false,
-        .dlc = 3,
-        .data = {
-            .v8 = {
-                0x18,
-                0x01,
-                0x24
-            }
-        }
-    };
-    handler = can->transmit(message);
-    if( handler !=NULLPTR )
-    {
-        bool_t res( handler->isTransmited() );
-        if( !res )
-        {
-
-        }
-    }
+    lib::UniquePointer<drv::Can> can( drv::Can::create(config) );    
+    ThreadWaitTx thread(*can);
+    thread.setPriority(api::Thread::PRIORITY_MAX);
+    thread.execute();
     while(true);
 }
 

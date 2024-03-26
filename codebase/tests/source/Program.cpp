@@ -3,7 +3,7 @@
  * @author    Sergey Baigudin, sergey@baigudin.software
  * @copyright 2023, Sergey Baigudin, Baigudin Software
  *
- * @brief Tests of `Program`.
+ * @brief Program of tests.
  */
 #include "Program.hpp"
 #include "ContexSwitchTest.hpp"
@@ -129,10 +129,10 @@ int32_t Program::start(int32_t argc, char_t* argv[])
     // testDriverNull(); 
 
     // Comment to lock or uncomment to execute    
-    // testDriverCan();
+    testDriverCan();
 
     // Comment to lock or uncomment to execute    
-    testDriverGpio();
+    // testDriverGpio();
     
     return 0;
 }
