@@ -389,19 +389,29 @@
               <FilePath>..\..\codebase\driver\can\source\drv.CanController.cpp</FilePath>
             </File>
             <File>
-              <FileName>drv.CanResourceMailbox.cpp</FileName>
+              <FileName>drv.CanResourceTx.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\..\codebase\driver\can\source\drv.CanResourceMailbox.cpp</FilePath>
+              <FilePath>..\..\codebase\driver\can\source\drv.CanResourceTx.cpp</FilePath>
             </File>
             <File>
-              <FileName>drv.CanResourceMailboxRoutine.cpp</FileName>
+              <FileName>drv.CanResourceTxMailbox.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\..\codebase\driver\can\source\drv.CanResourceMailboxRoutine.cpp</FilePath>
+              <FilePath>..\..\codebase\driver\can\source\drv.CanResourceTxMailbox.cpp</FilePath>
             </File>
             <File>
-              <FileName>drv.CanResourceFifoRoutine.cpp</FileName>
+              <FileName>drv.CanResourceTxMailboxRoutine.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\..\codebase\driver\can\source\drv.CanResourceFifoRoutine.cpp</FilePath>
+              <FilePath>..\..\codebase\driver\can\source\drv.CanResourceTxMailboxRoutine.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>drv.CanResourceRx.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\driver\can\source\drv.CanResourceRx.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>drv.CanResourceRxFifoRoutine.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\driver\can\source\drv.CanResourceRxFifoRoutine.cpp</FilePath>
             </File>
           </Files>
         </Group>
