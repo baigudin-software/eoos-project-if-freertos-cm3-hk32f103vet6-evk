@@ -409,9 +409,9 @@
               <FilePath>..\..\codebase\driver\can\source\drv.CanResourceRx.cpp</FilePath>
             </File>
             <File>
-              <FileName>drv.CanResourceRxFifoRoutine.cpp</FileName>
+              <FileName>drv.CanResourceRxFifo.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\..\codebase\driver\can\source\drv.CanResourceRxFifoRoutine.cpp</FilePath>
+              <FilePath>..\..\codebase\driver\can\source\drv.CanResourceRxFifo.cpp</FilePath>
             </File>
           </Files>
         </Group>
