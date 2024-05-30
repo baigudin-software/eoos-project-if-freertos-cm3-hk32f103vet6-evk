@@ -9,6 +9,7 @@
 #include "drv.Can.hpp"
 #include "lib.UniquePointer.hpp"
 #include "lib.AbstractThreadTask.hpp"
+#include "lib.Thread.hpp"
 
 namespace eoos
 {
@@ -16,113 +17,142 @@ namespace eoos
 namespace
 {
 
-void testTx(drv::Can& can)
+void testTxLine(drv::Can& can)
 {
     drv::Can::Message message = {
         .id  = {
-            .exid = 0x00035555,
-            .stid = 0x000007AA
+            .exid = 0b101010101010101010,
+            .stid = 0b0101010101
         },
-        .rtr = false,        
+        .rtr = false,
         .ide = true,
-        .dlc = 8,
+        .dlc = 0,
         .data = {
             .v64 = {
-                0x1234567890ABCDEF                
+                0x0000000000000000
             }
         }
     };
-
     while(true)
     {
         bool_t res( can.transmit(message) );
         if( res == false )
         {
-            message.data.v64[0]--;
+            while(true){}
         }
+        message.dlc = (message.dlc == 8) ? 0 : message.dlc + 1;
         message.data.v64[0]++;
     }
 }
 
-void testTxRx(drv::Can& can)
+void testRxLine(drv::Can& can)
 {
     bool_t res( false );    
+    {
+        drv::Can::RxFilter filter = {
+            .fifo = drv::Can::RxFilter::FIFO_1,
+            .index = 2,
+            .mode = drv::Can::RxFilter::MODE_IDMASK,
+            .scale = drv::Can::RxFilter::SCALE_32BIT,
+            .filters = { 
+                .group32 = {
+                    .idMask = {
+                        .id = {
+                            .bit = {
+                                .rtr = 0,
+                                .ide = 1,
+                                .exid = 0b000000000000000011,
+                                .stid = 0b0000000001
+                            }
+                        },
+                        .mask = {
+                            .bit = {
+                                .rtr = 0,
+                                .ide = 1,
+                                .exid = 0b000000000000000011,
+                                .stid = 0b0000000001
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        res = can.setReceiveFilter(filter);
+        if( res == false )
+        {
+            while(true);
+        }
+    }
+    drv::Can::Message exMessage = {
+        .id  = {
+            .exid = 0b000000000000000011,
+            .stid = 0b0000000001
+        },
+        .rtr = false,
+        .ide = true,
+        .dlc = 8,
+        .data = {
+            .v64 = {
+                0x0807060504030201
+            }
+        }
+    };    
+    while(true)
+    {
+        drv::Can::Message rxMessage = { 0 };
+        res = can.receive(&rxMessage, drv::Can::RXFIFO_1);
+        if( res == false )
+        {
+            while(true);
+        }
+        if( exMessage != rxMessage )
+        {
+            while(true);
+        }
+    }    
+}
+
+void testTxRxLoop(drv::Can& can)
+{
+    bool_t res( false );
     
-    //{
-    //    drv::Can::RxFilter filter = {
-    //        .fifo = drv::Can::RxFilter::FIFO_1,
-    //        .index = 0,
-    //        .mode = drv::Can::RxFilter::MODE_IDLIST,
-    //        .scale = drv::Can::RxFilter::SCALE_32BIT,
-    //        .filters = { 
-    //            .group32 = {
-    //                .idList = {
-    //                    .id = { 
-    //                        {
-    //                            .bit = {
-    //                                .rtr = 0,
-    //                                .ide = 1,
-    //                                .exid = 0b000000000000000011,
-    //                                .stid = 0b0000000001
-    //                            }
-    //                        },
-    //                        {
-    //                            .bit = {
-    //                                .rtr = 0,
-    //                                .ide = 1,
-    //                                .exid = 0b000000000000000111,
-    //                                .stid = 0b0000000011
-    //                            }
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    };
-    //    res = can.setReceiveFilter(filter);
-    //    if( res == false )
-    //    {
-    //        while(true);
-    //    }
-    //}
-    //
-    //{
-    //    drv::Can::RxFilter filter = {
-    //        .fifo = drv::Can::RxFilter::FIFO_1,
-    //        .index = 1,
-    //        .mode = drv::Can::RxFilter::MODE_IDLIST,
-    //        .scale = drv::Can::RxFilter::SCALE_32BIT,
-    //        .filters = { 
-    //            .group32 = {
-    //                .idList = {
-    //                    .id = { 
-    //                        {
-    //                            .bit = {
-    //                                .rtr = 0,
-    //                                .ide = 1,
-    //                                .exid = 0b000000000000001111,
-    //                                .stid = 0b0000000111
-    //                            }
-    //                        },
-    //                        {
-    //                            .bit = {
-    //                                .rtr = 0,
-    //                                .ide = 1,
-    //                                .exid = 0b000000000000011111,
-    //                                .stid = 0b0000001111
-    //                            }
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    };
-    //    res = can.setReceiveFilter(filter);
-    //    if( res == false )
-    //    {
-    //        while(true);
-    //    }
-    //}
+    {
+        drv::Can::RxFilter filter = {
+            .fifo = drv::Can::RxFilter::FIFO_1,
+            .index = 1,
+            .mode = drv::Can::RxFilter::MODE_IDLIST,
+            .scale = drv::Can::RxFilter::SCALE_32BIT,
+            .filters = { 
+                .group32 = {
+                    .idList = {
+                        .id = { 
+                            {
+                                .bit = {
+                                    .rtr = 0,
+                                    .ide = 1,
+                                    .exid = 0b000000000000001111,
+                                    .stid = 0b0000000111
+                                }
+                            },
+                            {
+                                .bit = {
+                                    .rtr = 0,
+                                    .ide = 1,
+                                    .exid = 0b000000000000011111,
+                                    .stid = 0b0000001111
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        res = can.setReceiveFilter(filter);
+        if( res == false )
+        {
+            while(true);
+        }
+    }
     {
         drv::Can::RxFilter filter = {
             .fifo = drv::Can::RxFilter::FIFO_1,
@@ -308,18 +338,9 @@ void testTxRx(drv::Can& can)
         }
     }
 
-    //if( txMessage == rxMessage )
-    //{
-    //    while(true);
-    //}
-    //else
-    //{
-    //    while(true);
-    //}
-
 }
 
-}
+} // namespace
 
 void testDriverCan()
 {
@@ -335,17 +356,18 @@ void testDriverCan()
                 .awum = 0, ///< Automatic wake-up mode (reset value is 0)
                 .abom = 0, ///< Automatic bus-off management (reset value is 0)
                 .ttcm = 0, ///< Time triggered communication mode (reset value is 0)
-                .dbf  = 1  ///< CAN reception and transmission frozen during debug (reset value is 1)
+                .dbf  = 0  ///< CAN reception and transmission frozen during debug (reset value is 1)
             },
             .btr = {
-                .lbkm = 1, ///< Loop back mode for debug (reset value is 0)
-                .silm = 1  ///< Silent mode for debug (reset value is 0)
+                .lbkm = 0, ///< Loop back mode for debug (reset value is 0)
+                .silm = 0  ///< Silent mode for debug (reset value is 0)
             }
         }
     };
     lib::UniquePointer<drv::Can> can( drv::Can::create(config) );
-    testTxRx(*can);    
-    testTx(*can);
+    testRxLine(*can);
+    testTxLine(*can);    
+    testTxRxLoop(*can);
     while(true);
 }
 
