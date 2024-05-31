@@ -413,6 +413,11 @@
               <FileType>8</FileType>
               <FilePath>..\..\codebase\driver\can\source\drv.CanResourceRxFifo.cpp</FilePath>
             </File>
+            <File>
+              <FileName>drv.CanResourceStatus.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\codebase\driver\can\source\drv.CanResourceStatus.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

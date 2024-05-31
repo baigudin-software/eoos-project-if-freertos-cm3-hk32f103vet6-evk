@@ -352,11 +352,7 @@ void testDriverCan()
             .mcr = {
                 .txfp = 0, ///< Transmit FIFO priority (reset value is 0)
                 .rflm = 0, ///< Receive FIFO locked mode (reset value is 0)
-                .nart = 0, ///< No automatic retransmission (reset value is 0)
-                .awum = 0, ///< Automatic wake-up mode (reset value is 0)
-                .abom = 0, ///< Automatic bus-off management (reset value is 0)
-                .ttcm = 0, ///< Time triggered communication mode (reset value is 0)
-                .dbf  = 0  ///< CAN reception and transmission frozen during debug (reset value is 1)
+                .dbf  = 0  ///< CAN RX and TX frozen during debug (reset value is 1)
             },
             .btr = {
                 .lbkm = 0, ///< Loop back mode for debug (reset value is 0)
@@ -365,8 +361,8 @@ void testDriverCan()
         }
     };
     lib::UniquePointer<drv::Can> can( drv::Can::create(config) );
+    testTxLine(*can);
     testRxLine(*can);
-    testTxLine(*can);    
     testTxRxLoop(*can);
     while(true);
 }
