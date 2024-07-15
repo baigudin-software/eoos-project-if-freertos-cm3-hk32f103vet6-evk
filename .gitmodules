@@ -22,3 +22,6 @@
 [submodule "codebase/driver/null"]
 	path = codebase/driver/null
 	url = ../eoos-driver-null.git
+[submodule "codebase/driver/can"]
+	path = codebase/driver/can
+	url = ../eoos-driver-can-if-stm32f103xx.git
